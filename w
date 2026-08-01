@@ -8932,46 +8932,12 @@ local Library do
 
         local UISection = Page:Section({Name = "UI Settings", Side = 2}) do
 
-            UISection:Toggle({
-                Name = "Keybind List",
-                Flag = "KeybindListToggle",
-                Default = false,
+            UISection:Keybind({
+                Name = "Menu Keybind",
+                Flag = "MenuBind",
+                Default = Enum.KeyCode.RightAlt,
                 Callback = function(Value)
-                    if KeybindList then
-                        KeybindList:SetVisibility(Value)
-                    end
-                end
-            })
-
-            UISection:Toggle({
-                Name = "Silent Load",
-                Flag = "SilentLoadToggle",
-                Default = (function()
-                    local path = Library.Folders.Configs .. "/silentload.txt"
-                    if isfile and isfile(path) then
-                        local ok, content = pcall(readfile, path)
-                        if ok and content == "true" then
-                            return true
-                        end
-                    end
-                    return false
-                end)(),
-                Callback = function(Value)
-                    local path = Library.Folders.Configs .. "/silentload.txt"
-
-                    if not isfolder(Library.Folders.Configs) then
-                        makefolder(Library.Folders.Configs)
-                    end
-
-                    if Value then
-                        if writefile then
-                            writefile(path, "true")
-                        end
-                    else
-                        if isfile and isfile(path) and delfile then
-                            delfile(path)
-                        end
-                    end
+                    Library.MenuKeybind = tostring(Value)
                 end
             })
 
