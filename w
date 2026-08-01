@@ -621,44 +621,63 @@ local Library do
                 local MouseLocation = UserInputService:GetMouseLocation()
                 local dx = MouseLocation.X - StartMouse.X
                 local dy = MouseLocation.Y - StartMouse.Y
-            
-                local UIScale = Gui:FindFirstChildOfClass("UIScale")
-                local currentScale = UIScale and UIScale.Scale or 1
-                
-                -- Adjust mouse movement by the UI's current scale so the edge tracks perfectly
-                local adjDx = dx / currentScale
-                local adjDy = dy / currentScale
-            
-                local x, y = StartPosition.X, StartPosition.Y
-                local w, h = StartSize.X, StartSize.Y
+                local VisualX = StartPosition.X
+                local VisualY = StartPosition.Y
+                local VisualW = StartSize.X * StartScale
+                local VisualH = StartSize.Y * StartScale
 
                 if CurrentSide == "L" then
-                    x = StartPosition.X + adjDx
-                    w = StartSize.X - adjDx
+                    VisualX = StartPosition.X + dx
+                    VisualW = VisualW - dx
                 elseif CurrentSide == "R" then
-                    w = StartSize.X + adjDx
+                    VisualW = VisualW + dx
                 elseif CurrentSide == "T" then
-                    y = StartPosition.Y + adjDy
-                    h = StartSize.Y - adjDy
+                    VisualY = StartPosition.Y + dy
+                    VisualH = VisualH - dy
                 elseif CurrentSide == "B" then
-                    h = StartSize.Y + adjDy
+                    VisualH = VisualH + dy
                 elseif CurrentSide == "BR" then
-                    w = StartSize.X + adjDx
-                    h = StartSize.Y + adjDy
+                    VisualW = VisualW + dx
+                    VisualH = VisualH + dy
                 end
+
+                local ScaleX = VisualW / StartSize.X
+                local ScaleY = VisualH / StartSize.Y
                 
-                -- Strict clamp to prevent layout breaking (text messiness)
-                if w < Minimum.X then
-                    if CurrentSide == "L" then
-                        x = x - (Minimum.X - w)
-                    end
-                    w = Minimum.X
+                local FinalScale = 1
+                if CurrentSide == "L" or CurrentSide == "R" then
+                    FinalScale = ScaleX
+                elseif CurrentSide == "T" or CurrentSide == "B" then
+                    FinalScale = ScaleY
+                else
+                    FinalScale = (ScaleX + ScaleY) / 2
                 end
-                if h < Minimum.Y then
-                    if CurrentSide == "T" then
-                        y = y - (Minimum.Y - h)
-                    end
-                    h = Minimum.Y
+
+                if FinalScale < 0.3 then FinalScale = 0.3 end
+                if FinalScale > 3.0 then FinalScale = 3.0 end
+
+                local UIScale = Gui:FindFirstChildOfClass("UIScale")
+                if not UIScale then
+                    UIScale = Instance.new("UIScale")
+                    UIScale.Parent = Gui
+                end
+
+                UIScale.Scale = FinalScale
+                if Library and Library.Flags then
+                    Library.Flags["UIScale"] = FinalScale
+                end
+
+                -- Lock physical bounds so layout never breaks and no empty space is created
+                local w = StartSize.X
+                local h = StartSize.Y
+                local x = StartPosition.X
+                local y = StartPosition.Y
+
+                -- If dragging Left/Top, we must physically move the anchored origin to match visual tracking
+                if CurrentSide == "L" then
+                    x = StartPosition.X + (StartSize.X * StartScale) - (StartSize.X * FinalScale)
+                elseif CurrentSide == "T" then
+                    y = StartPosition.Y + (StartSize.Y * StartScale) - (StartSize.Y * FinalScale)
                 end
 
                 if Window then
@@ -1187,12 +1206,13 @@ local Library do
                 })
                 if Data.LayoutOrder then Items["ColorpickerButton"].Instance.LayoutOrder = Data.LayoutOrder end
                 if Data.Parent2 and not Data.Parent2.Instance:FindFirstChild("nig") then
-                    Items["PaletteIcon"] = Instances:Create("ImageLabel", {
+                    Items["PaletteIcon"] = Instances:Create("ImageButton", {
                         Parent = Data.Parent2.Instance,
                         ImageColor3 = FromRGB(141, 141, 150),
                         BorderColor3 = FromRGB(0, 0, 0),
                         Size = UDim2New(0, 16, 0, 16),
                         AnchorPoint = Vector2New(0.5, 1),
+                        AutoButtonColor = false,
                         Image = "rbxassetid://92464809279921",
                         Name = "nig",
                         BackgroundTransparency = 1,
@@ -1206,6 +1226,9 @@ local Library do
                         Items["PaletteIcon"]:Tween(nil, {ImageColor3 = Library.Theme.Accent})
                     end)
                     
+                    Items["PaletteIcon"]:Connect("MouseButton1Down", function()
+                        Colorpicker:SetOpen(not Colorpicker.IsOpen)
+                    end)
                     Items["PaletteIcon"]:OnHoverLeave(function()
                         Items["PaletteIcon"]:Tween(nil, {ImageColor3 = FromRGB(141, 141, 150)})
                     end)
@@ -7465,6 +7488,7 @@ local Library do
                 Items["Modes"] = Instances:Create("Frame", {
                     Parent = Items["Label"].Instance,
                     Name = "\0",
+                    Visible = not Data.HideModes,
                     BorderColor3 = FromRGB(0, 0, 0),
                     AnchorPoint = Vector2New(1, 0),
                     Position = UDim2New(1, 0, 0, 0),
@@ -8935,23 +8959,10 @@ local Library do
             UISection:Keybind({
                 Name = "Menu Keybind",
                 Flag = "MenuBind",
+                HideModes = true,
                 Default = Enum.KeyCode.RightAlt,
                 Callback = function(Value)
                     Library.MenuKeybind = tostring(Value)
-                end
-            })
-
-            UISection:Button({
-                Name = "Unload Script",
-                Callback = function()
-                    Library:Notification({
-                        Title = "System",
-                        Description = "Unloading script...",
-                        Duration = 2,
-                        Icon = "73789337996373"
-                    })
-                    task.wait(0.5)
-                    Library:Unload()
                 end
             })
         end
