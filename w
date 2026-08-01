@@ -622,63 +622,43 @@ local Library do
                 local dx = MouseLocation.X - StartMouse.X
                 local dy = MouseLocation.Y - StartMouse.Y
             
-                local VisualX = StartPosition.X
-                local VisualY = StartPosition.Y
-                local VisualW = StartSize.X * StartScale
-                local VisualH = StartSize.Y * StartScale
-
-                if CurrentSide == "L" then
-                    VisualX = StartPosition.X + dx
-                    VisualW = VisualW - dx
-                elseif CurrentSide == "R" then
-                    VisualW = VisualW + dx
-                elseif CurrentSide == "T" then
-                    VisualY = StartPosition.Y + dy
-                    VisualH = VisualH - dy
-                elseif CurrentSide == "B" then
-                    VisualH = VisualH + dy
-                elseif CurrentSide == "BR" then
-                    VisualW = VisualW + dx
-                    VisualH = VisualH + dy
-                end
-
-                local ScaleX = VisualW / StartSize.X
-                local ScaleY = VisualH / StartSize.Y
-                
-                local FinalScale = 1
-                if CurrentSide == "L" or CurrentSide == "R" then
-                    FinalScale = ScaleX
-                elseif CurrentSide == "T" or CurrentSide == "B" then
-                    FinalScale = ScaleY
-                else
-                    FinalScale = (ScaleX + ScaleY) / 2
-                end
-
-                if FinalScale < 0.3 then FinalScale = 0.3 end
-                if FinalScale > 3.0 then FinalScale = 3.0 end
-
                 local UIScale = Gui:FindFirstChildOfClass("UIScale")
-                if not UIScale then
-                    UIScale = Instance.new("UIScale")
-                    UIScale.Parent = Gui
-                end
+                local currentScale = UIScale and UIScale.Scale or 1
+                
+                -- Adjust mouse movement by the UI's current scale so the edge tracks perfectly
+                local adjDx = dx / currentScale
+                local adjDy = dy / currentScale
+            
+                local x, y = StartPosition.X, StartPosition.Y
+                local w, h = StartSize.X, StartSize.Y
 
-                UIScale.Scale = FinalScale
-                if Library and Library.Flags then
-                    Library.Flags["UIScale"] = FinalScale
-                end
-
-                -- Lock physical bounds so layout never breaks and no empty space is created
-                local w = StartSize.X
-                local h = StartSize.Y
-                local x = StartPosition.X
-                local y = StartPosition.Y
-
-                -- If dragging Left/Top, we must physically move the anchored origin to match visual tracking
                 if CurrentSide == "L" then
-                    x = StartPosition.X + (StartSize.X * StartScale) - (StartSize.X * FinalScale)
+                    x = StartPosition.X + adjDx
+                    w = StartSize.X - adjDx
+                elseif CurrentSide == "R" then
+                    w = StartSize.X + adjDx
                 elseif CurrentSide == "T" then
-                    y = StartPosition.Y + (StartSize.Y * StartScale) - (StartSize.Y * FinalScale)
+                    y = StartPosition.Y + adjDy
+                    h = StartSize.Y - adjDy
+                elseif CurrentSide == "B" then
+                    h = StartSize.Y + adjDy
+                elseif CurrentSide == "BR" then
+                    w = StartSize.X + adjDx
+                    h = StartSize.Y + adjDy
+                end
+                
+                -- Strict clamp to prevent layout breaking (text messiness)
+                if w < Minimum.X then
+                    if CurrentSide == "L" then
+                        x = x - (Minimum.X - w)
+                    end
+                    w = Minimum.X
+                end
+                if h < Minimum.Y then
+                    if CurrentSide == "T" then
+                        y = y - (Minimum.Y - h)
+                    end
+                    h = Minimum.Y
                 end
 
                 if Window then
