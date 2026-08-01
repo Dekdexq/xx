@@ -1949,7 +1949,7 @@ local Library do
                         return
                     end
 
-                    if Library:IsMouseOverFrame(Items["ColorpickerWindow"]) or (Items["PaletteIcon"] and Library:IsMouseOverFrame(Items["PaletteIcon"])) then
+                    if Library:IsMouseOverFrame(Items["ColorpickerWindow"]) then
                         return
                     end
 
