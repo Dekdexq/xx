@@ -1226,7 +1226,7 @@ local Library do
                         Items["PaletteIcon"]:Tween(nil, {ImageColor3 = Library.Theme.Accent})
                     end)
                     
-                    Items["PaletteIcon"]:Connect("MouseButton1Click", function()
+                    Items["PaletteIcon"]:Connect("MouseButton1Down", function()
                         Colorpicker:SetOpen(not Colorpicker.IsOpen)
                     end)
                     Items["PaletteIcon"]:OnHoverLeave(function()
