@@ -2614,8 +2614,21 @@ local Library do
                     Library.Flags["UIScale"] = 0.56
                 end
 
-                Items["MainFrame"]:MakeResizeable(Vector2New(Items["MainFrame"].Instance.AbsoluteSize.X, Items["MainFrame"].Instance.AbsoluteSize.Y), Vector2New(9999, 9999), OriginalSizes)
+                Items["MainFrame"]:MakeResizeable(Vector2New(300, 250), Vector2New(9999, 9999), OriginalSizes)
                 Library:MakeBlurred(Items["MainFrame"], Window)
+
+                Instances:Create("Frame", {
+                    Parent = Items["MainFrame"].Instance,
+                    Name = "ResizeGripVisual",
+                    Size = UDim2New(0, 16, 0, 2),
+                    Position = UDim2New(1, -1, 1, -1),
+                    AnchorPoint = Vector2New(1, 1),
+                    BackgroundColor3 = FromRGB(255, 255, 255),
+                    BackgroundTransparency = 0.5,
+                    Rotation = -45,
+                    BorderSizePixel = 0,
+                    ZIndex = 99998
+                })
                 
                 Items["LeftTabs"] = Instances:Create("ScrollingFrame", {
                     Parent = Items["MainFrame"].Instance,
