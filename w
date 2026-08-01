@@ -1730,8 +1730,7 @@ local Library do
                     end
                 end
                 
-                local TargetTrans = Bool and 0.4 or 1
-                TweenService:Create(Items["BackdropFrame"].Instance, TweenInfo.new(Library.FadeSpeed, Library.Tween.Style, Library.Tween.Direction), {BackgroundTransparency = TargetTrans}):Play()
+                -- (Removed broken BackdropFrame tween)
 
                 NewTween.Tween.Completed:Connect(function()
                     Debounce = false 
