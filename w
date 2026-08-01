@@ -3915,8 +3915,8 @@ local Library do
                 Intro["Holder"] = Instances:Create("Frame", {
                     Parent = Library.Holder.Instance,
                     Name = "\0",
-                    -- soft off-white so it feels slightly blurred, not pure white
-                    BackgroundColor3 = FromRGB(230, 230, 235),
+                    -- soft dark so it feels slightly blurred, not pure black
+                    BackgroundColor3 = FromRGB(25, 25, 29),
                     BackgroundTransparency = 1,
                     BorderSizePixel = 0,
                     AnchorPoint = Vector2New(0.5, 0.5),
