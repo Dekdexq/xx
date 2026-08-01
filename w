@@ -1949,7 +1949,7 @@ local Library do
                         return
                     end
 
-                    if Library:IsMouseOverFrame(Items["ColorpickerWindow"]) or (Items["PaletteIcon"] and Library:IsMouseOverFrame(Items["PaletteIcon"]) and not Data.Section.IsSettings) then
+                    if Library:IsMouseOverFrame(Items["ColorpickerWindow"]) or (Items["PaletteIcon"] and Library:IsMouseOverFrame(Items["PaletteIcon"])) then
                         return
                     end
 
@@ -3739,11 +3739,13 @@ local Library do
                 end
 
                 local TargetScale = (Library.Flags and Library.Flags["UIScale"]) or 1
+                local AnimSpeed = 0.25
+                
                 if Window.IsOpen then
-                    UIScale.Scale = TargetScale * 0.95
-                    TweenService:Create(UIScale, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = TargetScale}):Play()
+                    UIScale.Scale = TargetScale * 0.85
+                    TweenService:Create(UIScale, TweenInfo.new(AnimSpeed, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = TargetScale}):Play()
                 else
-                    TweenService:Create(UIScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Scale = TargetScale * 0.95}):Play()
+                    TweenService:Create(UIScale, TweenInfo.new(AnimSpeed, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Scale = TargetScale * 0.85}):Play()
                 end
 
                 local Descendants = Items["MainFrame"].Instance:GetDescendants()
@@ -3760,10 +3762,10 @@ local Library do
 
                     if type(TransparencyProperty) == "table" then 
                         for _, Property in TransparencyProperty do 
-                            NewTween = Tween:FadeItem(Value, Property, Bool, Library.FadeSpeed)
+                            NewTween = Tween:FadeItem(Value, Property, Bool, AnimSpeed)
                         end
                     else
-                        NewTween = Tween:FadeItem(Value, TransparencyProperty, Bool, Library.FadeSpeed)
+                        NewTween = Tween:FadeItem(Value, TransparencyProperty, Bool, AnimSpeed)
                     end
                 end
                 
