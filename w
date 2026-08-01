@@ -564,8 +564,8 @@ local Library do
 
                 {Button = MakeEdge(
                     "BottomRight", 
-                    UDim2New(1, -15, 1, -15), 
-                    UDim2New(0, 15, 0, 15)), 
+                    UDim2New(1, -25, 1, -25), 
+                    UDim2New(0, 25, 0, 25)), 
                     Side = "BR"
                 },
             }
@@ -652,24 +652,12 @@ local Library do
                         Window.Bottom.X = w
                     end
                 elseif CurrentSide == "BR" then
-                    local UIScale = Gui:FindFirstChildOfClass("UIScale")
-                    if UIScale then
-                        local delta = (dx + dy) / 2
-                        local newScale = ((StartSize.X * StartScale) + delta) / StartSize.X
-                        if newScale < 0.4 then newScale = 0.4 end
-                        if newScale > 3 then newScale = 3 end
-                        UIScale.Scale = newScale
-                        if Library.Flags then
-                            Library.Flags["UIScale"] = newScale
-                        end
-                    else
-                        w = StartSize.X + dx
-                        h = StartSize.Y + dy
+                    w = StartSize.X + dx
+                    h = StartSize.Y + dy
 
-                        if Window then
-                            Window.Right.Y = h
-                            Window.Bottom.X = w
-                        end
+                    if Window then
+                        Window.Right.Y = h
+                        Window.Bottom.X = w
                     end
                 end
             
@@ -2630,7 +2618,7 @@ local Library do
                     Library.Flags["UIScale"] = 0.56
                 end
 
-                Items["MainFrame"]:MakeResizeable(Vector2New(300, 250), Vector2New(9999, 9999), OriginalSizes)
+                Items["MainFrame"]:MakeResizeable(Vector2New(450, 350), Vector2New(9999, 9999), OriginalSizes)
                 Library:MakeBlurred(Items["MainFrame"], Window)
 
                 Instances:Create("Frame", {
