@@ -1226,10 +1226,8 @@ local Library do
                         Items["PaletteIcon"]:Tween(nil, {ImageColor3 = Library.Theme.Accent})
                     end)
                     
-                    Items["PaletteIcon"]:Connect("InputBegan", function(Input)
-                        if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
-                            Colorpicker:SetOpen(not Colorpicker.IsOpen)
-                        end
+                    Items["PaletteIcon"]:Connect("MouseButton1Click", function()
+                        Colorpicker:SetOpen(not Colorpicker.IsOpen)
                     end)
                     Items["PaletteIcon"]:OnHoverLeave(function()
                         Items["PaletteIcon"]:Tween(nil, {ImageColor3 = FromRGB(141, 141, 150)})
@@ -3742,10 +3740,10 @@ local Library do
 
                 local TargetScale = (Library.Flags and Library.Flags["UIScale"]) or 1
                 if Window.IsOpen then
-                    UIScale.Scale = TargetScale * 0.85
-                    TweenService:Create(UIScale, TweenInfo.new(Library.FadeSpeed, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Scale = TargetScale}):Play()
+                    UIScale.Scale = TargetScale * 0.95
+                    TweenService:Create(UIScale, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = TargetScale}):Play()
                 else
-                    TweenService:Create(UIScale, TweenInfo.new(Library.FadeSpeed, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Scale = TargetScale * 0.85}):Play()
+                    TweenService:Create(UIScale, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Scale = TargetScale * 0.95}):Play()
                 end
 
                 local Descendants = Items["MainFrame"].Instance:GetDescendants()
