@@ -642,33 +642,50 @@ local Library do
                     VisualH = VisualH + dy
                 end
 
-                local SafeW = Minimum.X
-                local SafeH = Minimum.Y
+                local ScaleX = VisualW / StartSize.X
+                local ScaleY = VisualH / StartSize.Y
+                
+                local FinalScale = 1
+                if CurrentSide == "L" or CurrentSide == "R" then
+                    FinalScale = ScaleX
+                elseif CurrentSide == "T" or CurrentSide == "B" then
+                    FinalScale = ScaleY
+                else
+                    FinalScale = (ScaleX + ScaleY) / 2
+                end
 
-                local ReqScaleX = VisualW / SafeW
-                local ReqScaleY = VisualH / SafeH
-
-                local FinalScale = math.min(ReqScaleX, ReqScaleY, StartScale)
                 if FinalScale < 0.3 then FinalScale = 0.3 end
+                if FinalScale > 3.0 then FinalScale = 3.0 end
 
-                local w = VisualW / FinalScale
-                local h = VisualH / FinalScale
-                local x = VisualX
-                local y = VisualY
+                local UIScale = Gui:FindFirstChildOfClass("UIScale")
+                if not UIScale then
+                    UIScale = Instance.new("UIScale")
+                    UIScale.Parent = Gui
+                end
+
+                UIScale.Scale = FinalScale
+                if Library and Library.Flags then
+                    Library.Flags["UIScale"] = FinalScale
+                end
+
+                -- Lock physical bounds so layout never breaks and no empty space is created
+                local w = StartSize.X
+                local h = StartSize.Y
+                local x = StartPosition.X
+                local y = StartPosition.Y
+
+                -- If dragging Left/Top, we must physically move the anchored origin to match visual tracking
+                if CurrentSide == "L" then
+                    x = StartPosition.X + (StartSize.X * StartScale) - (StartSize.X * FinalScale)
+                elseif CurrentSide == "T" then
+                    y = StartPosition.Y + (StartSize.Y * StartScale) - (StartSize.Y * FinalScale)
+                end
 
                 if Window then
                     if CurrentSide == "L" then Window.Left.Y = h end
                     if CurrentSide == "R" or CurrentSide == "BR" then Window.Right.Y = h end
                     if CurrentSide == "T" then Window.Top.X = w end
                     if CurrentSide == "B" or CurrentSide == "BR" then Window.Bottom.X = w end
-                end
-
-                local UIScale = Gui:FindFirstChildOfClass("UIScale")
-                if UIScale then
-                    UIScale.Scale = FinalScale
-                    if Library and Library.Flags then
-                        Library.Flags["UIScale"] = FinalScale
-                    end
                 end
 
                 self:Tween(TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2FromOffset(x, y)})
