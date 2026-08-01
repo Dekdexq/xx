@@ -513,6 +513,7 @@ local Library do
             local StartMouse = nil 
             local StartPosition = nil 
             local StartSize = nil
+            local StartScale = 1
             
             local EdgeThickness = 2
 
@@ -578,6 +579,9 @@ local Library do
                 -- store offsets, not absolute screen pos
                 StartPosition = Vector2New(Gui.Position.X.Offset, Gui.Position.Y.Offset)
                 StartSize = Vector2New(Gui.Size.X.Offset, Gui.Size.Y.Offset)
+                
+                local UIScale = Gui:FindFirstChildOfClass("UIScale")
+                StartScale = UIScale and UIScale.Scale or 1
                 
                 for Index, Value in Edges do 
                     Value.Button:Tween(nil, {BackgroundTransparency = (Value.Side == Side) and 0 or 1})
@@ -648,12 +652,24 @@ local Library do
                         Window.Bottom.X = w
                     end
                 elseif CurrentSide == "BR" then
-                    w = StartSize.X + dx
-                    h = StartSize.Y + dy
+                    local UIScale = Gui:FindFirstChildOfClass("UIScale")
+                    if UIScale then
+                        local delta = (dx + dy) / 2
+                        local newScale = ((StartSize.X * StartScale) + delta) / StartSize.X
+                        if newScale < 0.4 then newScale = 0.4 end
+                        if newScale > 3 then newScale = 3 end
+                        UIScale.Scale = newScale
+                        if Library.Flags then
+                            Library.Flags["UIScale"] = newScale
+                        end
+                    else
+                        w = StartSize.X + dx
+                        h = StartSize.Y + dy
 
-                    if Window then
-                        Window.Right.Y = h
-                        Window.Bottom.X = w
+                        if Window then
+                            Window.Right.Y = h
+                            Window.Bottom.X = w
+                        end
                     end
                 end
             
