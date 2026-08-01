@@ -622,58 +622,55 @@ local Library do
                 local dx = MouseLocation.X - StartMouse.X
                 local dy = MouseLocation.Y - StartMouse.Y
             
-                local x, y = StartPosition.X, StartPosition.Y
-                local w, h = StartSize.X, StartSize.Y
+                local VisualX = StartPosition.X
+                local VisualY = StartPosition.Y
+                local VisualW = StartSize.X * StartScale
+                local VisualH = StartSize.Y * StartScale
 
                 if CurrentSide == "L" then
-                    x = StartPosition.X + dx
-                    w = StartSize.X - dx
-
-                    if Window then
-                        Window.Left.Y = h
-                    end
+                    VisualX = StartPosition.X + dx
+                    VisualW = VisualW - dx
                 elseif CurrentSide == "R" then
-                    w = StartSize.X + dx
-
-                    if Window then
-                        Window.Right.Y = h
-                    end
+                    VisualW = VisualW + dx
                 elseif CurrentSide == "T" then
-                    y = StartPosition.Y + dy
-                    h = StartSize.Y - dy
-
-                    if Window then
-                        Window.Top.X = w
-                    end
+                    VisualY = StartPosition.Y + dy
+                    VisualH = VisualH - dy
                 elseif CurrentSide == "B" then
-                    h = StartSize.Y + dy
-
-                    if Window then
-                        Window.Bottom.X = w
-                    end
+                    VisualH = VisualH + dy
                 elseif CurrentSide == "BR" then
-                    w = StartSize.X + dx
-                    h = StartSize.Y + dy
+                    VisualW = VisualW + dx
+                    VisualH = VisualH + dy
+                end
 
-                    if Window then
-                        Window.Right.Y = h
-                        Window.Bottom.X = w
+                local SafeW = Minimum.X
+                local SafeH = Minimum.Y
+
+                local ReqScaleX = VisualW / SafeW
+                local ReqScaleY = VisualH / SafeH
+
+                local FinalScale = math.min(ReqScaleX, ReqScaleY, StartScale)
+                if FinalScale < 0.3 then FinalScale = 0.3 end
+
+                local w = VisualW / FinalScale
+                local h = VisualH / FinalScale
+                local x = VisualX
+                local y = VisualY
+
+                if Window then
+                    if CurrentSide == "L" then Window.Left.Y = h end
+                    if CurrentSide == "R" or CurrentSide == "BR" then Window.Right.Y = h end
+                    if CurrentSide == "T" then Window.Top.X = w end
+                    if CurrentSide == "B" or CurrentSide == "BR" then Window.Bottom.X = w end
+                end
+
+                local UIScale = Gui:FindFirstChildOfClass("UIScale")
+                if UIScale then
+                    UIScale.Scale = FinalScale
+                    if Library and Library.Flags then
+                        Library.Flags["UIScale"] = FinalScale
                     end
                 end
-            
-                if w < Minimum.X then
-                    if CurrentSide == "L" then
-                        x = x - (Minimum.X - w)
-                    end
-                    w = Minimum.X
-                end
-                if h < Minimum.Y then
-                    if CurrentSide == "T" then
-                        y = y - (Minimum.Y - h)
-                    end
-                    h = Minimum.Y
-                end
-            
+
                 self:Tween(TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2FromOffset(x, y)})
                 self:Tween(TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2FromOffset(w, h)})
             end)
