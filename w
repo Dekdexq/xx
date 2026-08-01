@@ -544,7 +544,7 @@ local Library do
                 {Button = MakeEdge(
                     "Right", 
                     UDim2New(1, -EdgeThickness, 0, 0), 
-                    UDim2New(0, EdgeThickness, 1, 0)), 
+                    UDim2New(0, EdgeThickness, 1, -15)), 
                     Side = "R"
                 },
 
@@ -557,8 +557,15 @@ local Library do
                 {Button = MakeEdge(
                     "Bottom", 
                     UDim2New(0, 0, 1, -EdgeThickness), 
-                    UDim2New(1, 0, 0, EdgeThickness)), 
+                    UDim2New(1, -15, 0, EdgeThickness)), 
                     Side = "B"
+                },
+
+                {Button = MakeEdge(
+                    "BottomRight", 
+                    UDim2New(1, -15, 1, -15), 
+                    UDim2New(0, 15, 0, 15)), 
+                    Side = "BR"
                 },
             }
 
@@ -638,6 +645,14 @@ local Library do
                     h = StartSize.Y + dy
 
                     if Window then
+                        Window.Bottom.X = w
+                    end
+                elseif CurrentSide == "BR" then
+                    w = StartSize.X + dx
+                    h = StartSize.Y + dy
+
+                    if Window then
+                        Window.Right.Y = h
                         Window.Bottom.X = w
                     end
                 end
