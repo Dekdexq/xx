@@ -3738,13 +3738,13 @@ local Library do
                 end
 
                 local TargetScale = (Library.Flags and Library.Flags["UIScale"]) or 1
-                local AnimSpeed = 0.25
+                local AnimSpeed = 0.2
                 
                 if Window.IsOpen then
-                    UIScale.Scale = TargetScale * 0.85
+                    UIScale.Scale = TargetScale * 0.95
                     TweenService:Create(UIScale, TweenInfo.new(AnimSpeed, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = TargetScale}):Play()
                 else
-                    TweenService:Create(UIScale, TweenInfo.new(AnimSpeed, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Scale = TargetScale * 0.85}):Play()
+                    TweenService:Create(UIScale, TweenInfo.new(AnimSpeed, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Scale = TargetScale * 0.95}):Play()
                 end
 
                 local Descendants = Items["MainFrame"].Instance:GetDescendants()
@@ -7770,6 +7770,12 @@ local Library do
                     Keybind.Value = TextToDisplay
                     Items["KeyButton"].Instance.Text = TextToDisplay
 
+                    Library.Flags[Keybind.Flag] = {
+                        Mode = Keybind.ModeSelected,
+                        Key = Keybind.Key,
+                        Toggled = Keybind.Toggled
+                    }
+
                     if Data.Callback then 
                         Library:SafeCall(Data.Callback, Keybind.Toggled)
                     end
@@ -7778,6 +7784,12 @@ local Library do
                 elseif TableFind({"Toggle", "Hold", "Always"}, Key) then
                     Keybind.ModeSelected = Key
                     Keybind:SetMode(Key)
+
+                    Library.Flags[Keybind.Flag] = {
+                        Mode = Keybind.ModeSelected,
+                        Key = Keybind.Key,
+                        Toggled = Keybind.Toggled
+                    }
 
                     if Data.Callback then 
                         Library:SafeCall(Data.Callback, Keybind.Toggled)
