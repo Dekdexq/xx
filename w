@@ -788,8 +788,8 @@ local Library do
         Name = "\0",
         PaddingTop = UDimNew(0, 12),
         PaddingBottom = UDimNew(0, 12),
-        PaddingRight = UDimNew(0, 12),
-        PaddingLeft = UDimNew(0, 12)
+        PaddingRight = UDimNew(0, 4),
+        PaddingLeft = UDimNew(0, 4)
     })    
 
     Library.Unload = function(self)
@@ -1285,7 +1285,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["ColorpickerWindow"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 6)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["Palette"] = Instances:Create("TextButton", {
@@ -1321,7 +1321,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["Saturation"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 4)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["Value"] = Instances:Create("Frame", {
@@ -1343,13 +1343,13 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["Value"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 4)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Instances:Create("UICorner", {
                     Parent = Items["Palette"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 4)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["PaletteDragger"] = Instances:Create("Frame", {
@@ -1516,7 +1516,7 @@ local Library do
                 Instances:Create("UIPadding", {
                     Parent = Items["SavedColors"].Instance,
                     Name = "\0",
-                    PaddingLeft = UDimNew(0, 5),
+                    PaddingLeft = UDimNew(0, 4),
                     PaddingTop = UDimNew(0, 5),
                     PaddingRight = UDimNew(0, -125),
                     PaddingBottom = UDimNew(0, 5)
@@ -1544,7 +1544,7 @@ local Library do
                 Instances:Create("UIPadding", {
                     Parent = Items["HEXInput"].Instance,
                     Name = "\0",
-                    PaddingLeft = UDimNew(0, 5),
+                    PaddingLeft = UDimNew(0, 4),
                 })
                 
                 Items["HexLabel"] = Instances:Create("TextLabel", {
@@ -1567,7 +1567,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["HEXInput"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 4)
+                    CornerRadius = UDimNew(0, 3)
                 })                
             end
 
@@ -1854,7 +1854,7 @@ local Library do
                     Instances:Create("UICorner", {
                         Parent = SavedColor.Instance,
                         Name = "\0",
-                        CornerRadius = UDimNew(0, 6),
+                        CornerRadius = UDimNew(0, 3),
                     })                
 
                     local UIStroke = Instances:Create("UIStroke", {
@@ -2004,7 +2004,7 @@ local Library do
                 BorderSizePixel = 0,
                 BackgroundColor3 = FromRGB(27, 26, 29)
             })  Items["Modes"]:AddToTheme({BackgroundColor3 = "Element"})
-            Instances:Create("UICorner", { Parent = Items["Modes"].Instance, Name = "\0", CornerRadius = UDimNew(0, 5) })
+            Instances:Create("UICorner", { Parent = Items["Modes"].Instance, Name = "\0", CornerRadius = UDimNew(0, 3) })
             Items["Background"] = Instances:Create("Frame", {
                 Parent = Items["Modes"].Instance,
                 Name = "\0",
@@ -2015,7 +2015,7 @@ local Library do
                 BackgroundTransparency = 0,
                 BackgroundColor3 = FromRGB(255, 255, 255)
             })
-            Instances:Create("UICorner", { Parent = Items["Background"].Instance, Name = "\0", CornerRadius = UDimNew(0, 5) })
+            Instances:Create("UICorner", { Parent = Items["Background"].Instance, Name = "\0", CornerRadius = UDimNew(0, 3) })
             Instances:Create("UIGradient", {
                 Parent = Items["Background"].Instance,
                 Name = "\0",
@@ -2317,14 +2317,14 @@ local Library do
                     Name = "\0",
                     PaddingTop = UDimNew(0, 8),
                     PaddingBottom = UDimNew(0, 8),
-                    PaddingRight = UDimNew(0, 8),
-                    PaddingLeft = UDimNew(0, 8)
+                    PaddingRight = UDimNew(0, 4),
+                    PaddingLeft = UDimNew(0, 4)
                 })
                 
                 Instances:Create("UIPadding", {
                     Parent = Items["KeybindsList"].Instance,
                     Name = "\0",
-                    PaddingRight = UDimNew(0, 12)
+                    PaddingRight = UDimNew(0, 4)
                 })                
             end
 
@@ -2444,14 +2444,14 @@ local Library do
                     Name = "\0",
                     PaddingTop = UDimNew(0, 8),
                     PaddingBottom = UDimNew(0, 8),
-                    PaddingRight = UDimNew(0, 8),
-                    PaddingLeft = UDimNew(0, 8)
+                    PaddingRight = UDimNew(0, 4),
+                    PaddingLeft = UDimNew(0, 4)
                 })
                 
                 Instances:Create("UICorner", {
                     Parent = Items["Notification"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 5)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["Description"] = Instances:Create("TextLabel", {
@@ -2827,8 +2827,8 @@ local Library do
                     Name = "\0",
                     PaddingTop = UDimNew(0, 15),
                     PaddingBottom = UDimNew(0, 15),
-                    PaddingRight = UDimNew(0, 12),
-                    PaddingLeft = UDimNew(0, 12)
+                    PaddingRight = UDimNew(0, 4),
+                    PaddingLeft = UDimNew(0, 4)
                 })
 
                 Items["Logo"] = Instances:Create("ImageLabel", {
@@ -2924,7 +2924,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["CloseButton"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 7)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["CloseIcon"] = Instances:Create("ImageLabel", {
@@ -2959,19 +2959,19 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["CloseIconAccent"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 7)
+                    CornerRadius = UDimNew(0, 3)
                 })
 
                 Instances:Create("UICorner", {
                     Parent = Items["MainFrame"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 4)
+                    CornerRadius = UDimNew(0, 3)
                 })      
 
                 Instances:Create("UICorner", {
                     Parent = Items["LeftTabs"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 4)
+                    CornerRadius = UDimNew(0, 3)
                 })      
                 
                 do
@@ -3210,7 +3210,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["MinimizeButton"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 7)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["MinimizeIcon"] = Instances:Create("ImageLabel", {
@@ -3245,7 +3245,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["MinimizeIconAccent"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 7)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Instances:Create("UIGradient", {
@@ -3296,7 +3296,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["SettingsButton"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 7)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["SettingsIcon"] = Instances:Create("ImageLabel", {
@@ -3331,7 +3331,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["SettingsIconAccent"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 7)
+                    CornerRadius = UDimNew(0, 3)
                 })
 
                 Instances:Create("UIGradient", {
@@ -3401,7 +3401,7 @@ local Library do
                     Instances:Create("UICorner", {
                         Parent = SettingsItems["Settings"].Instance,
                         Name = "\0",
-                        CornerRadius = UDimNew(0, 6)
+                        CornerRadius = UDimNew(0, 3)
                     })
                     
                     SettingsItems["CloseButton"] = Instances:Create("TextButton", {
@@ -3424,7 +3424,7 @@ local Library do
                     Instances:Create("UICorner", {
                         Parent = SettingsItems["CloseButton"].Instance,
                         Name = "\0",
-                        CornerRadius = UDimNew(0, 4)
+                        CornerRadius = UDimNew(0, 3)
                     })
                     
                     SettingsItems["Text"] = Instances:Create("TextLabel", {
@@ -3503,13 +3503,13 @@ local Library do
                     Instances:Create("UICorner", {
                         Parent = SettingsItems["Accent"].Instance,
                         Name = "\0",
-                        CornerRadius = UDimNew(0, 4)
+                        CornerRadius = UDimNew(0, 3)
                     })
     
                     Instances:Create("UICorner", {
                         Parent = SettingsItems["CloseButton"].Instance,
                         Name = "\0",
-                        CornerRadius = UDimNew(0, 4)
+                        CornerRadius = UDimNew(0, 3)
                     })
 
                     SettingsItems["CloseButton"]:OnHover(function()
@@ -4151,7 +4151,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["Inactive"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 5)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items.Gradient = Instances:Create("UIGradient", {
@@ -4229,8 +4229,8 @@ local Library do
                     Name = "\0",
                     PaddingTop = UDimNew(0, 10),
                     PaddingBottom = UDimNew(0, 10),
-                    PaddingRight = UDimNew(0, 10),
-                    PaddingLeft = UDimNew(0, 10)
+                    PaddingRight = UDimNew(0, 4),
+                    PaddingLeft = UDimNew(0, 4)
                 })                
 
                 for Index = 1, Page.Columns do 
@@ -4357,7 +4357,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["GlobalChat"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 6)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["Title"] = Instances:Create("TextLabel", {
@@ -4413,7 +4413,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["Message"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 4)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["Background"] = Instances:Create("Frame", {
@@ -4431,7 +4431,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["Background"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 4)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["Input"] = Instances:Create("TextBox", {
@@ -4472,7 +4472,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["SendButton"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 4)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["SendIcon"] = Instances:Create("ImageLabel", {
@@ -4506,7 +4506,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["Accent"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 4)
+                    CornerRadius = UDimNew(0, 3)
                 })
 
                 Instances:Create("UIGradient", {
@@ -4555,8 +4555,8 @@ local Library do
                     Name = "\0",
                     PaddingTop = UDimNew(0, 0),
                     PaddingBottom = UDimNew(0, 0),
-                    PaddingRight = UDimNew(0, 10),
-                    PaddingLeft = UDimNew(0, 0)
+                    PaddingRight = UDimNew(0, 4),
+                    PaddingLeft = UDimNew(0, 4)
                 })
 
                 Items["Status"] = Instances:Create("Frame", {
@@ -4713,7 +4713,7 @@ local Library do
                         Instances:Create("UICorner", {
                             Parent = SubItems["RealMessage"].Instance,
                             Name = "\0",
-                            CornerRadius = UDimNew(0, 4)
+                            CornerRadius = UDimNew(0, 3)
                         })
 
                         SubItems["MessageText"] = Instances:Create("TextLabel", {
@@ -4738,8 +4738,8 @@ local Library do
                             Name = "\0",
                             PaddingTop = UDimNew(0, 10),
                             PaddingBottom = UDimNew(0, 10),
-                            PaddingRight = UDimNew(0, 10),
-                            PaddingLeft = UDimNew(0, 10)
+                            PaddingRight = UDimNew(0, 4),
+                            PaddingLeft = UDimNew(0, 4)
                         })
 
                         SubItems["Avatar"] = Instances:Create("ImageLabel", {
@@ -4759,7 +4759,7 @@ local Library do
                         Instances:Create("UICorner", {
                             Parent = SubItems["Avatar"].Instance,
                             Name = "\0",
-                            CornerRadius = UDimNew(0, 4)
+                            CornerRadius = UDimNew(0, 3)
                         })
                     else
                         SubItems["Message1"] = Instances:Create("Frame", {
@@ -4815,7 +4815,7 @@ local Library do
                         Instances:Create("UICorner", {
                             Parent = SubItems["RealMessage"].Instance,
                             Name = "\0",
-                            CornerRadius = UDimNew(0, 4)
+                            CornerRadius = UDimNew(0, 3)
                         })
 
                         SubItems["MessageText"] = Instances:Create("TextLabel", {
@@ -4840,8 +4840,8 @@ local Library do
                             Name = "\0",
                             PaddingTop = UDimNew(0, 10),
                             PaddingBottom = UDimNew(0, 10),
-                            PaddingRight = UDimNew(0, 10),
-                            PaddingLeft = UDimNew(0, 10)
+                            PaddingRight = UDimNew(0, 4),
+                            PaddingLeft = UDimNew(0, 4)
                         })
 
                         SubItems["Avatar"] = Instances:Create("ImageLabel", {
@@ -4861,7 +4861,7 @@ local Library do
                         Instances:Create("UICorner", {
                             Parent = SubItems["Avatar"].Instance,
                             Name = "\0",
-                            CornerRadius = UDimNew(0, 4)
+                            CornerRadius = UDimNew(0, 3)
                         })
                     end
                 end
@@ -4993,7 +4993,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["TopBackground"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 4)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["Title"] = Instances:Create("TextLabel", {
@@ -5068,7 +5068,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["Top"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 4)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["Fill"] = Instances:Create("Frame", {
@@ -5086,7 +5086,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["Fill"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 4)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["TopFills"] = Instances:Create("Frame", {
@@ -5182,7 +5182,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["Section"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 4)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["Background"] = Instances:Create("Frame", {
@@ -5233,7 +5233,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["Fade"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 4)
+                    CornerRadius = UDimNew(0, 3)
                 })                
 
                 Instances:Create("UIPadding", {
@@ -5487,7 +5487,7 @@ local Library do
                     BorderSizePixel = 0,
                     BackgroundColor3 = FromRGB(27, 26, 29)
                 })  SubKeybindItems["Container"]:AddToTheme({BackgroundColor3 = "Element"})
-                Instances:Create("UICorner", { Parent = SubKeybindItems["Container"].Instance, Name = "\0", CornerRadius = UDimNew(0, 4) })
+                Instances:Create("UICorner", { Parent = SubKeybindItems["Container"].Instance, Name = "\0", CornerRadius = UDimNew(0, 3) })
                 SubKeybindItems["KeyButton"] = Instances:Create("TextButton", {
                     Parent = SubKeybindItems["Container"].Instance,
                     Name = "\0",
@@ -5516,7 +5516,7 @@ local Library do
                     BorderSizePixel = 0,
                     BackgroundColor3 = FromRGB(27, 26, 29)
                 })  ModeMenuFrame:AddToTheme({BackgroundColor3 = "Element"})
-                Instances:Create("UICorner", { Parent = ModeMenuFrame.Instance, Name = "\0", CornerRadius = UDimNew(0, 4) })
+                Instances:Create("UICorner", { Parent = ModeMenuFrame.Instance, Name = "\0", CornerRadius = UDimNew(0, 3) })
                 Instances:Create("UIListLayout", {
                     Parent = ModeMenuFrame.Instance,
                     Name = "\0",
@@ -5785,7 +5785,7 @@ local Library do
                     Instances:Create("UICorner", {
                         Parent = SettingsItem["Settings"].Instance,
                         Name = "\0",
-                        CornerRadius = UDimNew(0, 6)
+                        CornerRadius = UDimNew(0, 3)
                     })                    
 
                     SettingsItem["SettingsIcon"] = Instances:Create("ImageLabel", {
@@ -5877,13 +5877,13 @@ local Library do
                     Instances:Create("UICorner", {
                         Parent = SettingsItem["Accent"].Instance,
                         Name = "\0",
-                        CornerRadius = UDimNew(0, 4)
+                        CornerRadius = UDimNew(0, 3)
                     })
                     
                     Instances:Create("UICorner", {
                         Parent = SettingsItem["Button"].Instance,
                         Name = "\0",
-                        CornerRadius = UDimNew(0, 4)
+                        CornerRadius = UDimNew(0, 3)
                     })
                     
                     SettingsItem["Text"] = Instances:Create("TextLabel", {
@@ -6064,7 +6064,7 @@ local Library do
                         BorderSizePixel = 0,
                         BackgroundColor3 = FromRGB(27, 26, 29)
                     })  Items["SubElements"]:AddToTheme({BackgroundColor3 = "Element"})
-                    Instances:Create("UICorner", { Parent = Items["SubElements"].Instance, Name = "\0", CornerRadius = UDimNew(0, 5) })
+                    Instances:Create("UICorner", { Parent = Items["SubElements"].Instance, Name = "\0", CornerRadius = UDimNew(0, 3) })
                     Instances:Create("UIListLayout", {
                         Parent = Items["SubElements"].Instance,
                         Name = "\0",
@@ -6076,7 +6076,7 @@ local Library do
                     Instances:Create("UIPadding", {
                         Parent = Items["SubElements"].Instance,
                         Name = "\0",
-                        PaddingLeft = UDimNew(0, 6)
+                        PaddingLeft = UDimNew(0, 4)
                     })
                 end
 
@@ -6154,7 +6154,7 @@ local Library do
                         BorderSizePixel = 0,
                         BackgroundColor3 = FromRGB(27, 26, 29)
                     })  Items["SubElements"]:AddToTheme({BackgroundColor3 = "Element"})
-                    Instances:Create("UICorner", { Parent = Items["SubElements"].Instance, Name = "\0", CornerRadius = UDimNew(0, 5) })
+                    Instances:Create("UICorner", { Parent = Items["SubElements"].Instance, Name = "\0", CornerRadius = UDimNew(0, 3) })
                     Instances:Create("UIListLayout", {
                         Parent = Items["SubElements"].Instance,
                         Name = "\0",
@@ -6166,7 +6166,7 @@ local Library do
                     Instances:Create("UIPadding", {
                         Parent = Items["SubElements"].Instance,
                         Name = "\0",
-                        PaddingLeft = UDimNew(0, 6)
+                        PaddingLeft = UDimNew(0, 4)
                     })
                 end
 
@@ -6269,13 +6269,13 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["Accent"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 4)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Instances:Create("UICorner", {
                     Parent = Items["Button"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 4)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["Text"] = Instances:Create("TextLabel", {
@@ -6716,7 +6716,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["RealDropdown"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 6)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["Value"] = Instances:Create("TextLabel", {
@@ -6798,7 +6798,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["OptionHolder"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 5)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["Holder"] = Instances:Create("ScrollingFrame", {
@@ -7361,7 +7361,7 @@ local Library do
                     Instances:Create("UICorner", {
                         Parent = Items["SubElements"].Instance,
                         Name = "\0",
-                        CornerRadius = UDimNew(0, 5)
+                        CornerRadius = UDimNew(0, 3)
                     })
                     
                     Instances:Create("UIListLayout", {
@@ -7376,7 +7376,7 @@ local Library do
                     Instances:Create("UIPadding", {
                         Parent = Items["SubElements"].Instance,
                         Name = "\0",
-                        PaddingLeft = UDimNew(0, 6)
+                        PaddingLeft = UDimNew(0, 4)
                     })                
                 end
 
@@ -7446,7 +7446,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["SubElements"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 5)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Instances:Create("UIListLayout", {
@@ -7461,7 +7461,7 @@ local Library do
                 Instances:Create("UIPadding", {
                     Parent = Items["SubElements"].Instance,
                     Name = "\0",
-                    PaddingLeft = UDimNew(0, 6)
+                    PaddingLeft = UDimNew(0, 4)
                 })
                 
                 Items["KeyButton"] = Instances:Create("TextButton", {
@@ -7516,7 +7516,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["Modes"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 5)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["Background"] = Instances:Create("Frame", {
@@ -7533,7 +7533,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["Background"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 5)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Instances:Create("UIGradient", {
@@ -7975,7 +7975,7 @@ local Library do
                     BorderSizePixel = 0,
                     BackgroundColor3 = FromRGB(27, 26, 29)
                 })  Items["KeyContainer"]:AddToTheme({BackgroundColor3 = "Element"})
-                Instances:Create("UICorner", { Parent = Items["KeyContainer"].Instance, Name = "\0", CornerRadius = UDimNew(0, 4) })
+                Instances:Create("UICorner", { Parent = Items["KeyContainer"].Instance, Name = "\0", CornerRadius = UDimNew(0, 3) })
 
                 Items["KeyButton"] = Instances:Create("TextButton", {
                     Parent = Items["KeyContainer"].Instance,
@@ -8006,7 +8006,7 @@ local Library do
                     BorderSizePixel = 0,
                     BackgroundColor3 = FromRGB(27, 26, 29)
                 })  ModeMenuFrame:AddToTheme({BackgroundColor3 = "Element"})
-                Instances:Create("UICorner", { Parent = ModeMenuFrame.Instance, Name = "\0", CornerRadius = UDimNew(0, 4) })
+                Instances:Create("UICorner", { Parent = ModeMenuFrame.Instance, Name = "\0", CornerRadius = UDimNew(0, 3) })
                 Instances:Create("UIListLayout", {
                     Parent = ModeMenuFrame.Instance,
                     Name = "\0",
@@ -8285,7 +8285,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["Textbox"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 4)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["Background"] = Instances:Create("Frame", {
@@ -8304,7 +8304,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["Background"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 4)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Items["Input"] = Instances:Create("TextBox", {
@@ -8437,14 +8437,14 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["Search"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 6)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Instances:Create("UIPadding", {
                     Parent = Items["Search"].Instance,
                     Name = "\0",
                     PaddingTop = UDimNew(0, 4),
-                    PaddingLeft = UDimNew(0, 8)
+                    PaddingLeft = UDimNew(0, 4)
                 })
 
                 Items["Background"] = Instances:Create("Frame", {
@@ -8479,7 +8479,7 @@ local Library do
                 Instances:Create("UICorner", {
                     Parent = Items["Background"].Instance,
                     Name = "\0",
-                    CornerRadius = UDimNew(0, 6)
+                    CornerRadius = UDimNew(0, 3)
                 })
                 
                 Instances:Create("UIListLayout", {
@@ -8494,8 +8494,8 @@ local Library do
                     Name = "\0",
                     PaddingTop = UDimNew(0, 8),
                     PaddingBottom = UDimNew(0, 8),
-                    PaddingRight = UDimNew(0, 12),
-                    PaddingLeft = UDimNew(0, 8)
+                    PaddingRight = UDimNew(0, 4),
+                    PaddingLeft = UDimNew(0, 4)
                 })      
                 
                 Items["_"] = Instances:Create("Frame", {
@@ -8800,6 +8800,34 @@ local Library do
         end
     end
 
+    Library.SendWebhook = function(self, Content, Embeds)
+        local url = Library.Flags["DiscordWebhookURL"]
+        if url and url ~= "" and url:find("discord") then
+            local data = {
+                ["content"] = Content or "",
+                ["embeds"] = Embeds or {}
+            }
+            local HttpService = game:GetService("HttpService")
+            local jsonData = HttpService:JSONEncode(data)
+            
+            task.spawn(function()
+                pcall(function()
+                    local request = http_request or request or HttpPost or (syn and syn.request) or (fluxus and fluxus.request)
+                    if request then
+                        request({
+                            Url = url,
+                            Method = "POST",
+                            Headers = {
+                                ["Content-Type"] = "application/json"
+                            },
+                            Body = jsonData
+                        })
+                    end
+                end)
+            end)
+        end
+    end
+
     Library.CreateSettingsPage = function(self, Window, KeybindList)
         local Page = Window:Page({Name = "Settings", Icon = "122669828593160"})
         local ConfigsSection = Page:Section({Name = "Configs", Side = 1}) do 
@@ -9061,6 +9089,52 @@ local Library do
                     end)
                     if not ok and Library and Library.Notification then
                         Library:Notification({Title = "Rejoin", Description = "Failed to rejoin.", Duration = 2, Icon = "73789337996373"})
+                    end
+                end
+            })
+        end
+
+        local WebhookSection = Page:Section({Name = "Discord Webhook", Side = 2}) do
+            WebhookSection:Textbox({
+                Name = "Webhook URL",
+                Flag = "DiscordWebhookURL",
+                Placeholder = "Enter Webhook URL here",
+                Numeric = false,
+                Finished = false,
+                Callback = function(Value)
+                end
+            })
+
+            WebhookSection:Button({
+                Name = "Test Webhook",
+                Callback = function()
+                    local url = Library.Flags["DiscordWebhookURL"]
+                    if not url or url == "" or not url:find("discord") then
+                        if Library and Library.Notification then
+                            Library:Notification({
+                                Title = "Webhook",
+                                Description = "Please enter a valid webhook URL.",
+                                Duration = 3,
+                                Icon = "73789337996373"
+                            })
+                        end
+                        return
+                    end
+                    
+                    Library:SendWebhook("Webhook Test from ZIIQ", {{
+                        ["title"] = "Test Successful",
+                        ["description"] = "Your webhook is working correctly!",
+                        ["type"] = "rich",
+                        ["color"] = tonumber(0xFF3C3C)
+                    }})
+                    
+                    if Library and Library.Notification then
+                        Library:Notification({
+                            Title = "Webhook",
+                            Description = "Test webhook sent!",
+                            Duration = 3,
+                            Icon = "73789337996373"
+                        })
                     end
                 end
             })
