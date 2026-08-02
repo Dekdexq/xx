@@ -105,7 +105,7 @@ local Library do
         Theme =  { },
         ToClean = { },
 
-        MenuKeybind = tostring(Enum.KeyCode.RightAlt), 
+        MenuKeybind = tostring(Enum.KeyCode.LeftControl), 
 
         Flags = { },
 
@@ -3698,7 +3698,7 @@ local Library do
                 Settings:Keybind({
                     Name = "Menu Keybind",
                     Flag = "MenuBind",
-                    Default = Enum.KeyCode.RightAlt,
+                    Default = Enum.KeyCode.LeftControl,
                     Callback = function(Value)
                         Library.MenuKeybind = tostring(Value)
                     end
@@ -9015,7 +9015,7 @@ local Library do
                 Name = "Menu Keybind",
                 Flag = "MenuBind",
                 HideModes = true,
-                Default = Enum.KeyCode.RightAlt,
+                Default = Enum.KeyCode.LeftControl,
                 Callback = function(Value)
                     Library.MenuKeybind = tostring(Value)
                 end
