@@ -46,8 +46,6 @@ local requestSending = false;
 
 local fSetClipboard, fRequest, fStringChar, fToString, fStringSub, fOsTime, fMathRandom, fMathFloor, fGetHwid = setclipboard or toclipboard, request or http_request or syn_request, string.char, tostring, string.sub, os.time, math.random, math.floor, gethwid or function() return game:GetService("Players").LocalPlayer.UserId end
 
-local function safeRequest(options)
-    if not fRequest then if onMessage then onMessage("Executor not supported") end; return nil end
     local success, response = pcall(function() return fRequest(options) end)
     if success then return response else return nil end
 end
@@ -59,7 +57,7 @@ local cachedLink, cachedTime = "", 0;
 
 local host = "https://api.platoboost.com";
 
-local hostResponse = safeRequest({
+local hostResponse = fRequest({
 
     Url = host .. "/public/connectivity",
 
@@ -81,7 +79,7 @@ function cacheLink()
 
     if cachedTime + (10*60) < fOsTime() then
 
-        local response = safeRequest({
+        local response = fRequest({
 
             Url = host .. "/public/start",
 
@@ -245,7 +243,7 @@ local redeemKey = function(key)
 
 
 
-    local response = safeRequest({
+    local response = fRequest({
 
         Url = endpoint,
 
@@ -378,7 +376,7 @@ local verifyKey = function(key)
 
 
 
-    local response = safeRequest({
+    local response = fRequest({
 
         Url = endpoint,
 
@@ -482,7 +480,7 @@ local getFlag = function(name)
 
 
 
-    local response = safeRequest({
+    local response = fRequest({
 
         Url = endpoint,
 
