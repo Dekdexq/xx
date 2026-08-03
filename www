@@ -1,0 +1,4245 @@
+-------------------------------------------------------------------------------
+
+--! json library
+
+--! cryptography library
+
+local a=2^32;local b=a-1;local function c(d,e)local f,g=0,1;while d~=0 or e~=0 do local h,i=d%2,e%2;local j=(h+i)%2;f=f+j*g;d=math.floor(d/2)e=math.floor(e/2)g=g*2 end;return f%a end;local function k(d,e,l,...)local m;if e then d=d%a;e=e%a;m=c(d,e)if l then m=k(m,l,...)end;return m elseif d then return d%a else return 0 end end;local function n(d,e,l,...)local m;if e then d=d%a;e=e%a;m=(d+e-c(d,e))/2;if l then m=n(m,l,...)end;return m elseif d then return d%a else return b end end;local function o(p)return b-p end;local function q(d,r)if r<0 then return lshift(d,-r)end;return math.floor(d%2^32/2^r)end;local function s(p,r)if r>31 or r<-31 then return 0 end;return q(p%a,r)end;local function lshift(d,r)if r<0 then return s(d,-r)end;return d*2^r%2^32 end;local function t(p,r)p=p%a;r=r%32;local u=n(p,2^r-1)return s(p,r)+lshift(u,32-r)end;local v={0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2}local function w(x)return string.gsub(x,".",function(l)return string.format("%02x",string.byte(l))end)end;local function y(z,A)local x=""for B=1,A do local C=z%256;x=string.char(C)..x;z=(z-C)/256 end;return x end;local function D(x,B)local A=0;for B=B,B+3 do A=A*256+string.byte(x,B)end;return A end;local function E(F,G)local H=64-(G+9)%64;G=y(8*G,8)F=F.."\128"..string.rep("\0",H)..G;assert(#F%64==0)return F end;local function I(J)J[1]=0x6a09e667;J[2]=0xbb67ae85;J[3]=0x3c6ef372;J[4]=0xa54ff53a;J[5]=0x510e527f;J[6]=0x9b05688c;J[7]=0x1f83d9ab;J[8]=0x5be0cd19;return J end;local function K(F,B,J)local L={}for M=1,16 do L[M]=D(F,B+(M-1)*4)end;for M=17,64 do local N=L[M-15]local O=k(t(N,7),t(N,18),s(N,3))N=L[M-2]L[M]=(L[M-16]+O+L[M-7]+k(t(N,17),t(N,19),s(N,10)))%a end;local d,e,l,P,Q,R,S,T=J[1],J[2],J[3],J[4],J[5],J[6],J[7],J[8]for B=1,64 do local O=k(t(d,2),t(d,13),t(d,22))local U=k(n(d,e),n(d,l),n(e,l))local V=(O+U)%a;local W=k(t(Q,6),t(Q,11),t(Q,25))local X=k(n(Q,R),n(o(Q),S))local Y=(T+W+X+v[B]+L[B])%a;T=S;S=R;R=Q;Q=(P+Y)%a;P=l;l=e;e=d;d=(Y+V)%a end;J[1]=(J[1]+d)%a;J[2]=(J[2]+e)%a;J[3]=(J[3]+l)%a;J[4]=(J[4]+P)%a;J[5]=(J[5]+Q)%a;J[6]=(J[6]+R)%a;J[7]=(J[7]+S)%a;J[8]=(J[8]+T)%a end;local function Z(F)F=E(F,#F)local J=I({})for B=1,#F,64 do K(F,B,J)end;return w(y(J[1],4)..y(J[2],4)..y(J[3],4)..y(J[4],4)..y(J[5],4)..y(J[6],4)..y(J[7],4)..y(J[8],4))end;local e;local l={["\\"]="\\",["\""]="\"",["\b"]="b",["\f"]="f",["\n"]="n",["\r"]="r",["\t"]="t"}local P={["/"]="/"}for Q,R in pairs(l)do P[R]=Q end;local S=function(T)return"\\"..(l[T]or string.format("u%04x",T:byte()))end;local B=function(M)return"null"end;local v=function(M,z)local _={}z=z or{}if z[M]then error("circular reference")end;z[M]=true;if rawget(M,1)~=nil or next(M)==nil then local A=0;for Q in pairs(M)do if type(Q)~="number"then error("invalid table: mixed or invalid key types")end;A=A+1 end;if A~=#M then error("invalid table: sparse array")end;for a0,R in ipairs(M)do table.insert(_,e(R,z))end;z[M]=nil;return"["..table.concat(_,",").."]"else for Q,R in pairs(M)do if type(Q)~="string"then error("invalid table: mixed or invalid key types")end;table.insert(_,e(Q,z)..":"..e(R,z))end;z[M]=nil;return"{"..table.concat(_,",").."}"end end;local g=function(M)return'"'..M:gsub('[%z\1-\31\\"]',S)..'"'end;local a1=function(M)if M~=M or M<=-math.huge or M>=math.huge then error("unexpected number value '"..tostring(M).."'")end;return string.format("%.14g",M)end;local j={["nil"]=B,["table"]=v,["string"]=g,["number"]=a1,["boolean"]=tostring}e=function(M,z)local x=type(M)local a2=j[x]if a2 then return a2(M,z)end;error("unexpected type '"..x.."'")end;local a3=function(M)return e(M)end;local a4;local N=function(...)local _={}for a0=1,select("#",...)do _[select(a0,...)]=true end;return _ end;local L=N(" ","\t","\r","\n")local p=N(" ","\t","\r","\n","]","}",",")local a5=N("\\","/",'"',"b","f","n","r","t","u")local m=N("true","false","null")local a6={["true"]=true,["false"]=false,["null"]=nil}local a7=function(a8,a9,aa,ab)for a0=a9,#a8 do if aa[a8:sub(a0,a0)]~=ab then return a0 end end;return#a8+1 end;local ac=function(a8,a9,J)local ad=1;local ae=1;for a0=1,a9-1 do ae=ae+1;if a8:sub(a0,a0)=="\n"then ad=ad+1;ae=1 end end;error(string.format("%s at line %d col %d",J,ad,ae))end;local af=function(A)local a2=math.floor;if A<=0x7f then return string.char(A)elseif A<=0x7ff then return string.char(a2(A/64)+192,A%64+128)elseif A<=0xffff then return string.char(a2(A/4096)+224,a2(A%4096/64)+128,A%64+128)elseif A<=0x10ffff then return string.char(a2(A/262144)+240,a2(A%262144/4096)+128,a2(A%4096/64)+128,A%64+128)end;error(string.format("invalid unicode codepoint '%x'",A))end;local ag=function(ah)local ai=tonumber(ah:sub(1,4),16)local aj=tonumber(ah:sub(7,10),16)if aj then return af((ai-0xd800)*0x400+aj-0xdc00+0x10000)else return af(ai)end end;local ak=function(a8,a0)local _=""local al=a0+1;local Q=al;while al<=#a8 do local am=a8:byte(al)if am<32 then ac(a8,al,"control character in string")elseif am==92 then _=_..a8:sub(Q,al-1)al=al+1;local T=a8:sub(al,al)if T=="u"then local an=a8:match("^[dD][89aAbB]%x%x\\u%x%x%x%x",al+1)or a8:match("^%x%x%x%x",al+1)or ac(a8,al-1,"invalid unicode escape in string")_=_..ag(an)al=al+#an else if not a5[T]then ac(a8,al-1,"invalid escape char '"..T.."' in string")end;_=_..P[T]end;Q=al+1 elseif am==34 then _=_..a8:sub(Q,al-1)return _,al+1 end;al=al+1 end;ac(a8,a0,"expected closing quote for string")end;local ao=function(a8,a0)local am=a7(a8,a0,p)local ah=a8:sub(a0,am-1)local A=tonumber(ah)if not A then ac(a8,a0,"invalid number '"..ah.."'")end;return A,am end;local ap=function(a8,a0)local am=a7(a8,a0,p)local aq=a8:sub(a0,am-1)if not m[aq]then ac(a8,a0,"invalid literal '"..aq.."'")end;return a6[aq],am end;local ar=function(a8,a0)local _={}local A=1;a0=a0+1;while 1 do local am;a0=a7(a8,a0,L,true)if a8:sub(a0,a0)=="]"then a0=a0+1;break end;am,a0=a4(a8,a0)_[A]=am;A=A+1;a0=a7(a8,a0,L,true)local as=a8:sub(a0,a0)a0=a0+1;if as=="]"then break end;if as~=","then ac(a8,a0,"expected ']' or ','")end end;return _,a0 end;local at=function(a8,a0)local _={}a0=a0+1;while 1 do local au,M;a0=a7(a8,a0,L,true)if a8:sub(a0,a0)=="}"then a0=a0+1;break end;if a8:sub(a0,a0)~='"'then ac(a8,a0,"expected string for key")end;au,a0=a4(a8,a0)a0=a7(a8,a0,L,true)if a8:sub(a0,a0)~=":"then ac(a8,a0,"expected ':' after key")end;a0=a7(a8,a0+1,L,true)M,a0=a4(a8,a0)_[au]=M;a0=a7(a8,a0,L,true)local as=a8:sub(a0,a0)a0=a0+1;if as=="}"then break end;if as~=","then ac(a8,a0,"expected '}' or ','")end end;return _,a0 end;local av={['"']=ak,["0"]=ao,["1"]=ao,["2"]=ao,["3"]=ao,["4"]=ao,["5"]=ao,["6"]=ao,["7"]=ao,["8"]=ao,["9"]=ao,["-"]=ao,["t"]=ap,["f"]=ap,["n"]=ap,["["]=ar,["{"]=at}a4=function(a8,a9)local as=a8:sub(a9,a9)local a2=av[as]if a2 then return a2(a8,a9)end;ac(a8,a9,"unexpected character '"..as.."'")end;local aw=function(a8)if type(a8)~="string"then error("expected argument of type string, got "..type(a8))end;local _,a9=a4(a8,a7(a8,1,L,true))a9=a7(a8,a9,L,true)if a9<=#a8 then ac(a8,a9,"trailing garbage")end;return _ end;
+
+local lEncode, lDecode, lDigest = a3, aw, Z;
+
+-------------------------------------------------------------------------------
+
+
+
+-------------------------------------------------------------------------------
+
+--! platoboost library
+
+
+
+--! configuration
+
+local service = 29076;  -- your service id, this is used to identify your service.
+
+local secret = "7fb1a7ed-155e-41bd-94f1-91e0d707fbb6";  -- make sure to obfuscate this if you want to ensure security.
+
+local useNonce = true;  -- use a nonce to prevent replay attacks and request tampering.
+
+
+
+--! callbacks
+
+local onMessage = function(message) if _G.UpdateKeyTitle then _G.UpdateKeyTitle(message) else print(message) end end;
+
+
+
+--! wait for game to load
+
+repeat task.wait(1) until game:IsLoaded();
+
+
+
+--! functions
+
+local requestSending = false;
+
+local fSetClipboard, fRequest, fStringChar, fToString, fStringSub, fOsTime, fMathRandom, fMathFloor, fGetHwid = setclipboard or toclipboard, request or http_request or syn_request, string.char, tostring, string.sub, os.time, math.random, math.floor, gethwid or function() return game:GetService("Players").LocalPlayer.UserId end
+
+    local success, response = pcall(function() return fRequest(options) end)
+    if success then return response else return nil end
+end
+
+local function safeRequest(options)
+    if not fRequest then if onMessage then onMessage("Executor not supported") end; return nil end
+    local success, response = pcall(function() return fRequest(options) end)
+    if success then return response else return nil end
+end
+local cachedLink, cachedTime = "", 0;
+
+
+
+--! pick host
+
+local host = "https://api.platoboost.com";
+
+local hostResponse = safeRequest({
+
+    Url = host .. "/public/connectivity",
+
+    Method = "GET"
+
+});
+
+if not hostResponse or hostResponse.StatusCode ~= 200 or hostResponse.StatusCode ~= 429 then
+
+    host = "https://api.platoboost.net";
+
+end
+
+
+
+--!optimize 2
+
+function cacheLink()
+
+    if cachedTime + (10*60) < fOsTime() then
+
+        local response = safeRequest({
+
+            Url = host .. "/public/start",
+
+            Method = "POST",
+
+            Body = lEncode({
+
+                service = service,
+
+                identifier = lDigest(fGetHwid())
+
+            }),
+
+            Headers = {
+
+                ["Content-Type"] = "application/json"
+
+            }
+
+        });
+
+
+
+        if response and response.StatusCode == 200 then
+
+            local decoded = lDecode(response.Body);
+
+
+
+            if decoded.success == true then
+
+                cachedLink = decoded.data.url;
+
+                cachedTime = fOsTime();
+
+                return true, cachedLink;
+
+            else
+
+                onMessage(decoded.message);
+
+                return false, decoded.message;
+
+            end
+
+        elseif response and response.StatusCode == 429 then
+
+            local msg = "you are being rate limited, please wait 20 seconds and try again.";
+
+            onMessage(msg);
+
+            return false, msg;
+
+        end
+
+
+
+        local msg = "Failed to cache link.";
+
+        onMessage(msg);
+
+        return false, msg;
+
+    else
+
+        return true, cachedLink;
+
+    end
+
+end
+
+
+
+cacheLink();
+
+
+
+--!optimize 2
+
+local generateNonce = function()
+
+    local str = ""
+
+    for _ = 1, 16 do
+
+        str = str .. fStringChar(fMathFloor(fMathRandom() * (122 - 97 + 1)) + 97)
+
+    end
+
+    return str
+
+end
+
+
+
+--!optimize 1
+
+for _ = 1, 5 do
+
+    local oNonce = generateNonce();
+
+    task.wait(0.2)
+
+    if generateNonce() == oNonce then
+
+        local msg = "platoboost nonce error.";
+
+        onMessage(msg);
+
+        error(msg);
+
+    end
+
+end
+
+
+
+--!optimize 2
+
+local copyLink = function()
+
+    local success, link = cacheLink();
+
+    
+
+    if success then
+
+        if fSetClipboard then fSetClipboard(link) end;
+
+    end
+
+end
+
+
+
+--!optimize 2
+
+local redeemKey = function(key)
+
+    local nonce = generateNonce();
+
+    local endpoint = host .. "/public/redeem/" .. fToString(service);
+
+
+
+    local body = {
+
+        identifier = lDigest(fGetHwid()),
+
+        key = key
+
+    }
+
+
+
+    if useNonce then
+
+        body.nonce = nonce;
+
+    end
+
+
+
+    local response = safeRequest({
+
+        Url = endpoint,
+
+        Method = "POST",
+
+        Body = lEncode(body),
+
+        Headers = {
+
+            ["Content-Type"] = "application/json"
+
+        }
+
+    });
+
+
+
+    if response and response.StatusCode == 200 then
+
+        local decoded = lDecode(response.Body);
+
+
+
+        if decoded.success == true then
+
+            if decoded.data.valid == true then
+
+                if useNonce then
+
+                    if decoded.data.hash == lDigest("true" .. "-" .. nonce .. "-" .. secret) then
+
+                        return true;
+
+                    else
+
+                        onMessage("failed to verify integrity.");
+
+                        return false;
+
+                    end    
+
+                else
+
+                    return true;
+
+                end
+
+            else
+
+                onMessage("key is invalid.");
+
+                return false;
+
+            end
+
+        else
+
+            if fStringSub(decoded.message, 1, 27) == "unique constraint violation" then
+
+                onMessage("you already have an active key, please wait for it to expire before redeeming it.");
+
+                return false;
+
+            else
+
+                onMessage(decoded.message);
+
+                return false;
+
+            end
+
+        end
+
+    elseif response and response.StatusCode == 429 then
+
+        onMessage("you are being rate limited, please wait 20 seconds and try again.");
+
+        return false;
+
+    else
+
+        onMessage("server returned an invalid status code, please try again later.");
+
+        return false; 
+
+    end
+
+end
+
+
+
+--!optimize 2
+
+local verifyKey = function(key)
+    local VIP_KEYS = {
+        ["KEY_dexq"] = true,
+        ["KEY_ZIIQ"] = true,
+        ["KEY_haicase!"] = true,
+        ["KEY_Parad"] = true,
+        ["KEY_moo"] = true,
+    }
+    if VIP_KEYS[key] then return true end
+
+    if requestSending == true then
+
+        onMessage("a request is already being sent, please slow down.");
+
+        return false;
+
+    else
+
+        requestSending = true;
+
+    end
+
+
+
+    local nonce = generateNonce();
+
+    local endpoint = host .. "/public/whitelist/" .. fToString(service) .. "?identifier=" .. lDigest(fGetHwid()) .. "&key=" .. key;
+
+
+
+    if useNonce then
+
+        endpoint = endpoint .. "&nonce=" .. nonce;
+
+    end
+
+
+
+    local response = safeRequest({
+
+        Url = endpoint,
+
+        Method = "GET",
+
+    });
+
+
+
+    requestSending = false;
+
+
+
+    if response and response.StatusCode == 200 then
+
+        local decoded = lDecode(response.Body);
+
+
+
+        if decoded.success == true then
+
+            if decoded.data.valid == true then
+
+                if useNonce then
+
+                    if decoded.data.hash == lDigest("true" .. "-" .. nonce .. "-" .. secret) then
+
+                        return true;
+
+                    else
+
+                        onMessage("failed to verify integrity.");
+
+                        return false;
+
+                    end
+
+                else
+
+                    return true;
+
+                end
+
+            else
+
+                if fStringSub(key, 1, 4) == "KEY_" then
+
+                    return redeemKey(key);
+
+                else
+
+                    onMessage("key is invalid.");
+
+                    return false;
+
+                end
+
+            end
+
+        else
+
+            onMessage(decoded.message);
+
+            return false;
+
+        end
+
+    elseif response and response.StatusCode == 429 then
+
+        onMessage("you are being rate limited, please wait 20 seconds and try again.");
+
+        return false;
+
+    else
+
+        onMessage("server returned an invalid status code, please try again later.");
+
+        return false;
+
+    end
+
+end
+
+
+
+--!optimize 2
+
+local getFlag = function(name)
+
+    local nonce = generateNonce();
+
+    local endpoint = host .. "/public/flag/" .. fToString(service) .. "?name=" .. name;
+
+
+
+    if useNonce then
+
+        endpoint = endpoint .. "&nonce=" .. nonce;
+
+    end
+
+
+
+    local response = safeRequest({
+
+        Url = endpoint,
+
+        Method = "GET",
+
+    });
+
+
+
+    if response and response.StatusCode == 200 then
+
+        local decoded = lDecode(response.Body);
+
+
+
+        if decoded.success == true then
+
+            if useNonce then
+
+                if decoded.data.hash == lDigest(fToString(decoded.data.value) .. "-" .. nonce .. "-" .. secret) then
+
+                    return decoded.data.value;
+
+                else
+
+                    onMessage("failed to verify integrity.");
+
+                    return nil;
+
+                end
+
+            else
+
+                return decoded.data.value;
+
+            end
+
+        else
+
+            onMessage(decoded.message);
+
+            return nil;
+
+        end
+
+    else
+
+        return nil;
+
+    end
+
+end
+
+
+
+local KeyVerified = false
+
+
+
+if isfolder and makefolder and isfile and readfile and writefile then
+
+    if not isfolder("ZIIQ_Data") then
+
+        makefolder("ZIIQ_Data")
+
+    end
+
+    if isfile("ZIIQ_Data/SavedKey.txt") then
+
+        local savedKey = readfile("ZIIQ_Data/SavedKey.txt")
+
+        if savedKey and savedKey ~= "" then
+
+            if verifyKey(savedKey) then
+
+                KeyVerified = true
+
+            end
+
+        end
+
+    end
+
+end
+
+
+
+if not KeyVerified then
+
+local CoreGui = (gethui and gethui()) or game:GetService("CoreGui")
+
+local TweenService = game:GetService("TweenService")
+
+local UserInputService = game:GetService("UserInputService")
+
+
+
+local ZiiqKeyUI = Instance.new("ScreenGui")
+
+ZiiqKeyUI.Name = "ZiiqKeyUI"
+
+ZiiqKeyUI.Parent = CoreGui
+
+ZiiqKeyUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+ZiiqKeyUI.IgnoreGuiInset = true
+
+
+
+local MainFrame = Instance.new("Frame")
+
+MainFrame.Name = "MainFrame"
+
+MainFrame.Parent = ZiiqKeyUI
+
+MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+
+MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+
+MainFrame.Size = UDim2.new(0, 450, 0, 200)
+
+MainFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+
+MainFrame.BorderSizePixel = 0
+
+MainFrame.ClipsDescendants = true
+
+
+
+local UICorner = Instance.new("UICorner")
+
+UICorner.CornerRadius = UDim.new(0, 8)
+
+UICorner.Parent = MainFrame
+
+
+
+local UIStroke = Instance.new("UIStroke")
+
+UIStroke.Color = Color3.fromRGB(255, 60, 60)
+
+UIStroke.Thickness = 2
+
+UIStroke.Parent = MainFrame
+
+
+
+local Title = Instance.new("TextLabel")
+
+Title.Parent = MainFrame
+
+Title.Size = UDim2.new(1, 0, 0, 50)
+
+Title.Position = UDim2.new(0, 0, 0, 0)
+
+Title.BackgroundTransparency = 1
+
+Title.Text = "ZIIQ"
+
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+Title.Font = Enum.Font.GothamBold
+
+Title.TextSize = 18
+
+
+
+_G.UpdateKeyTitle = function(msg)
+
+    Title.Text = msg
+
+end
+
+
+
+local KeyBox = Instance.new("TextBox")
+
+KeyBox.Parent = MainFrame
+
+KeyBox.Size = UDim2.new(0, 390, 0, 40)
+
+KeyBox.Position = UDim2.new(0.5, -195, 0, 60)
+
+KeyBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+
+KeyBox.TextColor3 = Color3.fromRGB(220, 220, 220)
+
+KeyBox.Text = ""
+
+KeyBox.PlaceholderText = "Key"
+
+KeyBox.Font = Enum.Font.GothamBold
+
+KeyBox.TextSize = 14
+
+KeyBox.ClearTextOnFocus = false
+
+local BoxCorner = Instance.new("UICorner")
+
+BoxCorner.CornerRadius = UDim.new(0, 6)
+
+BoxCorner.Parent = KeyBox
+
+local BoxStroke = Instance.new("UIStroke")
+
+BoxStroke.Color = Color3.fromRGB(100, 100, 100)
+
+BoxStroke.Parent = KeyBox
+
+
+
+local function CreateButton(name, text, pos, size, bgColor, textColor, callback)
+
+    local btn = Instance.new("TextButton")
+
+    btn.Name = name
+
+    btn.Parent = MainFrame
+
+    btn.Size = size
+
+    btn.Position = pos
+
+    btn.BackgroundColor3 = bgColor
+
+    btn.TextColor3 = textColor
+
+    btn.Text = text
+
+    btn.Font = Enum.Font.GothamBold
+
+    btn.TextSize = 14
+
+    btn.AutoButtonColor = false
+
+    
+
+    local corner = Instance.new("UICorner")
+
+    corner.CornerRadius = UDim.new(0, 6)
+
+    corner.Parent = btn
+
+    
+
+    local r, g, b = bgColor.R*255, bgColor.G*255, bgColor.B*255
+
+    local hoverColor = Color3.fromRGB(math.min(r+30, 255), math.min(g+30, 255), math.min(b+30, 255))
+
+    
+
+    btn.MouseEnter:Connect(function()
+
+        TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = hoverColor}):Play()
+
+    end)
+
+    btn.MouseLeave:Connect(function()
+
+        TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = bgColor}):Play()
+
+    end)
+
+    btn.MouseButton1Down:Connect(function()
+
+        TweenService:Create(btn, TweenInfo.new(0.1), {Size = UDim2.new(size.X.Scale, size.X.Offset - 4, size.Y.Scale, size.Y.Offset - 4)}):Play()
+
+    end)
+
+    btn.MouseButton1Up:Connect(function()
+
+        TweenService:Create(btn, TweenInfo.new(0.1), {Size = size}):Play()
+
+        callback()
+
+    end)
+
+end
+
+
+
+CreateButton("GetBtn", "Get Key", UDim2.new(0.5, -195, 0, 130), UDim2.new(0, 100, 0, 35), Color3.fromRGB(240, 240, 240), Color3.fromRGB(12, 12, 12), function()
+
+    copyLink()
+
+    Title.Text = "Link Copied to Clipboard!"
+
+    task.wait(2)
+
+    Title.Text = "ZIIQ Authentication"
+
+end)
+
+
+
+CreateButton("DiscordBtn", "Discord", UDim2.new(0.5, -80, 0, 130), UDim2.new(0, 100, 0, 35), Color3.fromRGB(170, 130, 255), Color3.fromRGB(255, 255, 255), function()
+
+    setclipboard("https://discord.gg/ywqmF9HXh7")
+
+    Title.Text = "Discord Copied!"
+
+    task.wait(2)
+
+    Title.Text = "ZIIQ Authentication"
+
+end)
+
+
+
+CreateButton("VerifyBtn", "Verify Key", UDim2.new(0.5, 35, 0, 130), UDim2.new(0, 160, 0, 35), Color3.fromRGB(255, 60, 60), Color3.fromRGB(255, 255, 255), function()
+
+    Title.Text = "Verifying..."
+
+    if verifyKey(KeyBox.Text) then
+
+        if isfolder and writefile then
+
+            if not isfolder("ZIIQ_Data") then makefolder("ZIIQ_Data") end
+
+            writefile("ZIIQ_Data/SavedKey.txt", KeyBox.Text)
+
+        end
+
+        Title.Text = "Success! Loading ZIIQ..."
+
+        TweenService:Create(MainFrame, TweenInfo.new(0.5), {Size = UDim2.new(0,0,0,0)}):Play()
+
+        task.wait(0.5)
+
+        KeyVerified = true
+
+        ZiiqKeyUI:Destroy()
+
+    else
+
+        -- Title.Text = "Invalid Key!"
+
+        task.wait(2)
+
+        Title.Text = "ZIIQ Authentication"
+
+    end
+
+end)
+
+
+
+local dragging, dragInput, dragStart, startPos
+
+MainFrame.InputBegan:Connect(function(input)
+
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+
+        dragging = true
+
+        dragStart = input.Position
+
+        startPos = MainFrame.Position
+
+        
+
+        input.Changed:Connect(function()
+
+            if input.UserInputState == Enum.UserInputState.End then
+
+                dragging = false
+
+            end
+
+        end)
+
+    end
+
+end)
+
+MainFrame.InputChanged:Connect(function(input)
+
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+
+        dragInput = input
+
+    end
+
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+
+    if input == dragInput and dragging then
+
+        local delta = input.Position - dragStart
+
+        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+
+    end
+
+end)
+
+
+
+    while not KeyVerified do
+
+        task.wait(0.1)
+
+    end
+
+end
+
+
+
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Dekdexq/xx/refs/heads/main/w?t=" .. tostring(tick())))()
+
+local CheatName = "ZIIQ"
+
+
+
+Library.Folders = {
+
+    Directory = CheatName,
+
+    Configs = CheatName .. "/Configs",
+
+    Assets = CheatName .. "/Assets",
+
+}
+
+
+
+local CustomTheme = {
+
+    ["Accent"] = Color3.fromRGB(255, 60, 60),           -- Smooth bright red
+
+    ["AccentGradient"] = Color3.fromRGB(180, 30, 30),   -- Smooth darker red
+
+    ["Background"] = Color3.fromRGB(12, 12, 12),        -- Deep dark grey, almost pure black
+
+    ["Background 2"] = Color3.fromRGB(16, 16, 16),      -- Slightly lighter background
+
+    ["Text"] = Color3.fromRGB(220, 220, 220),           -- Soft white text, easier on the eyes
+
+    ["Outline"] = Color3.fromRGB(35, 35, 35),           -- Very subtle dark outline for smoothness
+
+    ["Section Top"] = Color3.fromRGB(18, 18, 18),       -- Smooth section header
+
+    ["Section Background"] = Color3.fromRGB(16, 16, 16),-- Subtle section background
+
+    ["Section Background 2"] = Color3.fromRGB(20, 20, 20),-- Alternate section color
+
+    ["Element"] = Color3.fromRGB(24, 24, 24)            -- UI elements (buttons/dropdowns) background
+
+}
+
+
+
+for name, color in pairs(CustomTheme) do
+
+    Library.Theme[name] = color
+
+    pcall(function() Library:ChangeTheme(name, color) end)
+
+end
+
+local Window = Library:Window({
+
+    Name = "ZIIQ",
+
+    SubName = "By Dexq",
+
+    Logo = "85279746515974"
+
+})
+
+
+
+local KeybindList = Library:KeybindList("Keybinds")
+
+Library:Watermark({
+
+    "ZIIQ",
+
+    "By Dexq",
+
+    85279746515974
+
+})
+
+Library:Notification({
+
+            Title = "ZIIQ",
+
+            Description = "By Dexq",
+
+            Duration = 5,
+
+            Icon = "85279746515974"
+
+        })
+
+
+
+Window:Category("Main")
+
+
+
+
+
+local MainPage = Window:Page({Name = "General", Icon = "138827881557940"})
+
+local MainTab = MainPage:Section({Name = "Main", Side = 1})
+
+
+
+local FilterConfig = {
+
+	EnableRarityFilter = false,
+
+	EnableMutationFilter = false,
+
+	BuyRarities = {},
+
+	BuyMutations = {},
+
+}
+
+local function getSpawnPackClickDetector()
+
+	local player = game:GetService("Players").LocalPlayer
+
+	local plotNum = player:FindFirstChild("PlotNumber") and player.PlotNumber.Value or 0
+
+	if plotNum ~= 0 then
+
+		local plotFolder = workspace:FindFirstChild("MAP")
+
+			and workspace.MAP:FindFirstChild("Plots")
+
+			and workspace.MAP.Plots:FindFirstChild(tostring(plotNum))
+
+		if plotFolder and plotFolder:FindFirstChild("Plot_N0") then
+
+			for _, v in ipairs(plotFolder.Plot_N0:GetDescendants()) do
+
+				if v:IsA("ClickDetector") and v.Parent.Name == "ButtonPart" then
+
+					return v
+
+				end
+
+			end
+
+		end
+
+	end
+
+	for _, desc in ipairs(workspace:GetDescendants()) do
+
+		if
+
+			desc:IsA("ClickDetector")
+
+			and desc.Parent
+
+			and desc.Parent.Name == "ButtonPart"
+
+			and desc.Parent.Parent
+
+			and desc.Parent.Parent.Name == "Plot_N0"
+
+		then
+
+			return desc
+
+		end
+
+	end
+
+	return nil
+
+end
+
+MainTab:Button({
+
+	Name = "Inventory",
+
+	Callback = function()
+
+		local localPlayer = game:GetService("Players").LocalPlayer
+
+		local backpack = localPlayer:FindFirstChild("Backpack")
+
+		local char = localPlayer.Character
+
+		local items = {}
+
+		local function checkItem(t)
+
+			if t:IsA("Tool") then
+
+				local cardName = t:GetAttribute("CardName")
+
+				if cardName then
+
+					local mutation = tostring(t:GetAttribute("CardMutation") or "Normal")
+
+					local grade = tostring(t:GetAttribute("CardGrade") or "N/A")
+
+					local level = tonumber(t:GetAttribute("CardLevel")) or 1
+
+					table.insert(
+
+						items,
+
+						string.format(
+
+							"[Card] %s | Lvl: %d | Mutation: %s | Grade: %s",
+
+							cardName,
+
+							level,
+
+							mutation,
+
+							grade
+
+						)
+
+					)
+
+					return
+
+				end
+
+				local packName = t:GetAttribute("TemplateName")
+
+				if packName then
+
+					local mutation = tostring(t:GetAttribute("Mutation") or "Normal")
+
+					local rarity = tostring(t:GetAttribute("Rarity") or "N/A")
+
+					table.insert(
+
+						items,
+
+						string.format("[Pack] %s | Rarity: %s | Mutation: %s", packName, rarity, mutation)
+
+					)
+
+					return
+
+				end
+
+				table.insert(items, string.format("[Item] %s", t.Name))
+
+			end
+
+		end
+
+		if backpack then
+
+			for _, t in ipairs(backpack:GetChildren()) do
+
+				checkItem(t)
+
+			end
+
+		end
+
+		if char then
+
+			for _, t in ipairs(char:GetChildren()) do
+
+				checkItem(t)
+
+			end
+
+		end
+
+		if #items > 0 then
+
+			local resultText = "Inventory\n" .. table.concat(items, "\n")
+
+			if setclipboard then
+
+				setclipboard(resultText)
+
+				if Library and Library.Notification then
+
+					Library:Notification({ Title = "Inventory", Description = "Copied to clipboard successfully!", Duration = 5, Icon = "85279746515974"})
+
+				end
+
+			else
+
+				if Library and Library.Notification then
+
+					Library:Notification({
+
+						Title = "Inventory",
+
+						Description = "Your executor does not support setclipboard!",
+
+						Duration = 5, Icon = "85279746515974"})
+
+				end
+
+			end
+
+		else
+
+			if Library and Library.Notification then
+
+				Library:Notification({ Title = "Inventory", Description = "Your inventory is empty!", Duration = 5, Icon = "85279746515974"})
+
+			end
+
+		end
+
+	end,
+
+})
+
+getgenv().AutoSpawnPack = false
+
+local AutoSpawnToggle = MainTab:Toggle({ Flag = "AutoSpawnPack",
+
+	Name = "Auto Spawn Pack",
+
+	Callback = function(state)
+
+		getgenv().AutoSpawnPack = state
+
+		if state then
+
+			task.spawn(function()
+
+				local cd = getSpawnPackClickDetector()
+
+				if not cd then
+
+					Library:Notification({ Title = "Error", Description = "Spawn Pack button not found!", Duration = 3, Icon = "85279746515974"})
+
+					getgenv().AutoSpawnPack = false
+
+					return
+
+				end
+
+				
+
+				while getgenv().AutoSpawnPack do
+
+					local activeCards = 0
+
+					if getgenv().CardFolder then
+
+						for _, model in ipairs(getgenv().CardFolder:GetChildren()) do
+
+							if model:IsA("Model") and model:GetAttribute("IgnoreTutoBeam") ~= nil and model:FindFirstChildWhichIsA("ProximityPrompt", true) then
+
+								if getgenv().AutoBuyCards and model:GetAttribute("Rejected") then
+
+									continue
+
+								end
+
+								activeCards = activeCards + 1
+
+							end
+
+						end
+
+					end
+
+					if getgenv().AutoBuyCards then
+
+						if activeCards < 3 then
+
+							pcall(function() fireclickdetector(cd) end)
+
+							task.wait(0.35)
+
+						else
+
+							task.wait(0.1)
+
+						end
+
+					else
+
+						pcall(function() fireclickdetector(cd) end)
+
+						if activeCards >= 3 then
+
+							task.wait(0.4)
+
+						else
+
+							task.wait(0.35)
+
+						end
+
+					end
+
+				end
+
+			end)
+
+		end
+
+	end,
+
+})
+
+local RaritiesList = {
+
+	"Common",
+
+	"Uncommon",
+
+	"Rare",
+
+	"Epic",
+
+	"Legendary",
+
+	"Mythic",
+
+	"Secret",
+
+	"Divine",
+
+	"Transcendent",
+
+	"Shadow",
+
+	"Emperor",
+
+	"Demon",
+
+	"Manga",
+
+	"Celestial",
+
+	"Heavenly",
+
+	"Corrupted",
+
+	"Striker",
+
+	"Sacred",
+
+	"Paradox",
+
+	"Founder",
+
+	"Evolved",
+
+	"Magic",
+
+	"Oni",
+
+	"Chaos",
+
+	"Ruin",
+
+	"Reborn",
+
+	"Beast",
+
+	"Nordic",
+
+	"Hunter",
+
+	"Soul",
+
+	"Swordsman",
+
+	"Gamer",
+
+	"Revenge",
+
+	"Chainsaw",
+
+	"Eternity",
+
+	"Academy",
+
+	"Dynasty",
+
+	"Grail",
+
+	"Mystery",
+
+	"VIP",
+
+	"Event",
+
+	"Limited",
+
+	"Blaze",
+
+	"Devour",
+
+	"Conquest",
+
+}
+
+getgenv().SelectedRarities = {}
+
+local RarityDropdown = MainTab:Dropdown({ Flag = "SelectRaritiestoBuy",
+
+	Name = "Select Rarities to Buy",
+
+	Multi = true,
+
+	Items = RaritiesList,
+
+	Default = {},
+
+	Callback = function(value)
+
+		getgenv().SelectedRarities = {}
+
+		if type(value) == "table" then
+
+			for k, v in pairs(value) do
+
+				if type(k) == "number" then
+
+					getgenv().SelectedRarities[string.lower(tostring(v))] = true
+
+				else
+
+					getgenv().SelectedRarities[string.lower(tostring(k))] = v
+
+				end
+
+			end
+
+		elseif type(value) == "string" then
+
+			getgenv().SelectedRarities[string.lower(value)] = true
+
+		end
+
+	end,
+
+})
+
+local MutationsList = {
+
+	"Normal",
+
+	"Golden",
+
+	"Diamond",
+
+	"Venomous",
+
+	"Rainbow",
+
+	"Sakura",
+
+	"Candy",
+
+	"Blessed",
+
+	"Radioactive",
+
+	"Glitch",
+
+	"Starfallen",
+
+	"Admin",
+
+	"Unknow",
+
+}
+
+getgenv().SelectedMutations = {}
+
+local MutationDropdown = MainTab:Dropdown({ Flag = "SelectMutationstoBuy",
+
+	Name = "Select Mutations to Buy",
+
+	Multi = true,
+
+	Items = MutationsList,
+
+	Default = {},
+
+	Callback = function(value)
+
+		getgenv().SelectedMutations = {}
+
+		if type(value) == "table" then
+
+			for k, v in pairs(value) do
+
+				if type(k) == "number" then
+
+					getgenv().SelectedMutations[string.lower(tostring(v))] = true
+
+				else
+
+					getgenv().SelectedMutations[string.lower(tostring(k))] = v
+
+				end
+
+			end
+
+		elseif type(value) == "string" then
+
+			getgenv().SelectedMutations[string.lower(value)] = true
+
+		end
+
+	end,
+
+})
+
+getgenv().CardFolder = getgenv().CardFolder or nil
+
+getgenv().PromptCooldowns = getgenv().PromptCooldowns or {}
+
+local RunService = game:GetService("RunService")
+
+local function findCardFolder()
+
+	for _, desc in ipairs(workspace:GetDescendants()) do
+
+		if desc:IsA("ProximityPrompt") then
+
+			local model = desc:FindFirstAncestorOfClass("Model")
+
+			if model and model:GetAttribute("IgnoreTutoBeam") ~= nil then
+
+				getgenv().CardFolder = model.Parent
+
+				return true
+
+			end
+
+		end
+
+	end
+
+	return false
+
+end
+
+local function GetAllInventorySummary()
+
+	local player = game:GetService("Players").LocalPlayer
+
+	local inventory = {}
+
+	local function scanFolder(folder)
+
+		if not folder then
+
+			return
+
+		end
+
+		for _, item in ipairs(folder:GetChildren()) do
+
+			if item:IsA("Tool") then
+
+				local rarityAttr = item:GetAttribute("Rarity")
+
+				local cardNameAttr = item:GetAttribute("CardName")
+
+				local groupKey = rarityAttr or cardNameAttr or item.Name
+
+				if
+
+					not item:GetAttribute("Rarity")
+
+					and item:FindFirstChild("Rarity")
+
+					and item.Rarity:IsA("StringValue")
+
+				then
+
+					groupKey = item.Rarity.Value
+
+				end
+
+				local mutation = item:GetAttribute("Mutation") or "Normal"
+
+				if
+
+					not item:GetAttribute("Mutation")
+
+					and item:FindFirstChild("Mutation")
+
+					and item.Mutation:IsA("StringValue")
+
+				then
+
+					mutation = item.Mutation.Value
+
+				end
+
+				if not string.find(string.lower(item.Name), "box") and groupKey ~= "Box" then
+
+					if not inventory[groupKey] then
+
+						inventory[groupKey] = {}
+
+					end
+
+					if not inventory[groupKey][mutation] then
+
+						inventory[groupKey][mutation] = 0
+
+					end
+
+					inventory[groupKey][mutation] = inventory[groupKey][mutation] + 1
+
+				end
+
+			end
+
+		end
+
+	end
+
+	pcall(function()
+
+		scanFolder(player:FindFirstChild("Backpack"))
+
+		if player.Character then
+
+			scanFolder(player.Character)
+
+		end
+
+	end)
+
+	local resultLines = {}
+
+	for key, mutations in pairs(inventory) do
+
+		local mutStrings = {}
+
+		for mut, count in pairs(mutations) do
+
+			table.insert(mutStrings, mut .. " x" .. tostring(count))
+
+		end
+
+		table.insert(resultLines, tostring(key) .. ": " .. table.concat(mutStrings, " | "))
+
+	end
+
+	if #resultLines > 0 then
+
+		local fullText = table.concat(resultLines, "\n")
+
+		if string.len(fullText) > 1000 then
+
+			return string.sub(fullText, 1, 1000) .. "..."
+
+		end
+
+		return fullText
+
+	else
+
+		return "None"
+
+	end
+
+end
+
+local function instantBuyLoop()
+
+	if not getgenv().AutoBuyCards then
+
+		return
+
+	end
+
+	if not getgenv().CardFolder then
+
+		findCardFolder()
+
+	end
+
+	if not getgenv().CardFolder then
+
+		return
+
+	end
+
+	for _, model in ipairs(getgenv().CardFolder:GetChildren()) do
+
+		if not model:IsA("Model") or model:GetAttribute("IgnoreTutoBeam") == nil then
+
+			continue
+
+		end
+
+		local prompt = model:FindFirstChildWhichIsA("ProximityPrompt", true)
+
+		if not prompt then
+
+			continue
+
+		end
+
+		local rarityLabel = model:FindFirstChild("Rarity", true)
+
+		local mutationLabel = model:FindFirstChild("Mutation", true)
+
+		
+
+		local cardRarity, cardMutation = "", "Normal"
+
+		if rarityLabel then
+
+			cardRarity = string.match(string.gsub(rarityLabel.Text, "<[^>]+>", ""), "^%s*(.-)%s*$") or ""
+
+		end
+
+		if mutationLabel then
+
+			local mText = string.match(string.gsub(mutationLabel.Text, "<[^>]+>", ""), "^%s*(.-)%s*$") or ""
+
+			if mText ~= "" then cardMutation = mText end
+
+		end
+
+		
+
+		local hasRarityFilter = next(getgenv().SelectedRarities) ~= nil
+
+		local hasMutationFilter = next(getgenv().SelectedMutations) ~= nil
+
+		
+
+		if hasRarityFilter or hasMutationFilter then
+
+			if cardRarity == "" or cardRarity == "Label" then continue end
+
+			if cardMutation == "" or cardMutation == "Label" then continue end
+
+		end
+
+		
+
+		local matchRarity = not hasRarityFilter or getgenv().SelectedRarities[string.lower(cardRarity)]
+
+		local matchMutation = not hasMutationFilter or getgenv().SelectedMutations[string.lower(cardMutation)]
+
+		
+
+		if matchRarity and matchMutation then
+
+			local now = tick()
+
+			if not getgenv().PromptCooldowns[prompt] or now - getgenv().PromptCooldowns[prompt] > 0.10 then
+
+				getgenv().PromptCooldowns[prompt] = now
+
+				pcall(function()
+
+					prompt.Enabled = true
+
+					prompt.HoldDuration = 0
+
+					prompt.RequiresLineOfSight = false
+
+					prompt.MaxActivationDistance = 99999
+
+					
+
+					local itemId = model:GetAttribute("TutoItemId")
+
+					if itemId then
+
+						local ConveyorRE = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes") and game:GetService("ReplicatedStorage").Remotes:FindFirstChild("ConveyorRE")
+
+						if ConveyorRE then
+
+							ConveyorRE:FireServer("TryBuy", {ItemId = itemId})
+
+						end
+
+					end
+
+					
+
+					fireproximityprompt(prompt)
+
+				end)
+
+				
+
+				if Library.Flags["DiscordWebhookURL"] and Library.Flags["DiscordWebhookURL"] ~= "" then
+
+					if not getgenv().NotifiedCards then getgenv().NotifiedCards = {} end
+
+					if not getgenv().NotifiedCards[prompt] then
+
+						getgenv().NotifiedCards[prompt] = true
+
+						task.spawn(function()
+
+							local inventoryText = "Unknown"
+
+							pcall(function() inventoryText = GetAllInventorySummary() end)
+
+							Library:SendWebhook("", {{
+
+								["title"] = "ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â½ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â° Card Bought!",
+
+								["description"] = "Successfully bought a card matching your criteria.",
+
+								["type"] = "rich",
+
+								["color"] = 5579688,
+
+								["fields"] = {
+
+									{ ["name"] = "Rarity", ["value"] = tostring(cardRarity), ["inline"] = true },
+
+									{ ["name"] = "Mutation", ["value"] = tostring(cardMutation), ["inline"] = true },
+
+									{ ["name"] = "Full Inventory", ["value"] = inventoryText, ["inline"] = false }
+
+								},
+
+								["timestamp"] = DateTime.now():ToIsoDate()
+
+							}})
+
+						end)
+
+					end
+
+				end
+
+			end
+
+		else
+
+			model:SetAttribute("Rejected", true)
+
+		end
+
+	end
+
+end
+
+if getgenv().BruteForceLoop then
+
+	getgenv().BruteForceLoop:Disconnect()
+
+end
+
+getgenv().BruteForceLoop = RunService.Heartbeat:Connect(instantBuyLoop)
+
+getgenv().AutoBuyCards = false
+
+local AutoBuyToggle = MainTab:Toggle({ Flag = "BuySelectedNow",
+
+	Name = "Auto Buy Selected Cards",
+
+	Callback = function(state)
+
+		getgenv().AutoBuyCards = state
+
+	end,
+
+})
+
+getgenv().AutoCarry = false
+
+getgenv().AutoCarryDelay = 5
+
+local AutoCarryToggle = MainTab:Toggle({ Flag = "AutoCarryCollectMoney",
+
+	Name = "Auto Carry (Collect Money)",
+
+	Callback = function(state)
+
+		getgenv().AutoCarry = state
+
+		if state then
+
+			task.spawn(function()
+
+				while getgenv().AutoCarry do
+
+					local player = game:GetService("Players").LocalPlayer
+
+					local character = player.Character
+
+					local hrp = character and character:FindFirstChild("HumanoidRootPart")
+
+					local searchArea = workspace
+
+					local plotNum = player:FindFirstChild("PlotNumber") and player.PlotNumber.Value or 0
+
+					
+
+					if plotNum ~= 0 then
+
+						local plotFolder = workspace:FindFirstChild("MAP")
+
+							and workspace.MAP:FindFirstChild("Plots")
+
+							and workspace.MAP.Plots:FindFirstChild(tostring(plotNum))
+
+						if plotFolder then
+
+							searchArea = plotFolder
+
+						end
+
+					end
+
+					
+
+					if hrp then
+
+						local originalCFrame = hrp.CFrame
+
+						local collected = false
+
+						
+
+						local function getBoxCount()
+
+							local count = 0
+
+							local bp = player:FindFirstChild("Backpack")
+
+							if bp then
+
+								for _, v in ipairs(bp:GetChildren()) do if v:IsA("Tool") and v.Name:find("Box") then count = count + 1 end end
+
+							end
+
+							for _, v in ipairs(character:GetChildren()) do if v:IsA("Tool") and v.Name:find("Box") then count = count + 1 end end
+
+							return count
+
+						end
+
+						
+
+						for _, prompt in ipairs(se				targetPos = prompt.Parent.WorldPosition
+
+										elseif prompt.Parent:IsA("Model") and prompt.Parent.PrimaryPart then
+
+											targetPos = prompt.Parent.PrimaryPart.Position
+
+										end
+
+										
+
+										if targetPos then
+
+											local startCount = getBoxCount()
+
+											
+
+											local carryTarget = CFrame.new(targetPos) + Vector3.new(0, 3, 0)
+
+											hrp.CFrame = carryTarget
+
+											hrp.Velocity = Vector3.new(0, 0, 0)
+
+											task.wait(0.2)
+
+											
+
+											local timeout = 0
+
+											while prompt and prompt.Parent and timeout < 50 do
+
+												prompt.RequiresLineOfSight = false
+
+												prompt.MaxActivationDistance = 99999
+
+												fireproximityprompt(prompt)
+
+												
+
+				â€šÃ‚Â¡ 1 ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¥ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂªÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â  1 ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¥ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â«ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â«ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂµÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬cription = "Started!", Duration = 3, Icon = "85279746515974" })
+
+				
+
+				while getgenv().AutoSellBox do
+
+					local character = player.Character
+
+					local hrp = character and character:FindFirstChild("HumanoidRootPart")
+
+					local backpack = player:FindFirstChild("Backpack")
+
+					
+
+					-- ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¶ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â«ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â²ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂºÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬â€šÃ‚Â¹ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂºÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¾ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âº (ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â²ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¾ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂµÃƒÆ’Ã†â€™Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¾)
+
+						local sellPrompt = nil
+
+						local targetCFrame = nil
+
+						
+
+						local plotNum = player:FindFirstChild("PlotNumber") and player.PlotNumber.Value or 0
+
+						if plotNum ~= 0 then
+
+							local plotFolder = workspace:FindFirstChild("MAP")
+
+								and workspace.MAP:FindFirstChild("Plots")
+
+								and workspace.MAP.Plots:FindFirstChild(tostring(plotNum))
+
+							if plotFolder and plotFolder:FindFirstChild("Plot_N0") and plotFolder.Plot_N0:FindFirstChild("SellPart")Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â«ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â²ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂºÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¾
+
+						if not sellPrompt or not targetCFrame then
+
+							for _, p in ipairs(workspace:GetDescendants()) do
+
+								if p:IsA("ProximityPrompt") then
+
+									local aText = string.lower(p.ActionText)
+
+									local fullTxt = string.lower(p.ActionText .. " " .. p.ObjectTextÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â«ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÅ¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â«ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¥ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¥ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â²ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂµÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â²ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢
+
+								hrp.CFrame = targetCFrame
+
+								hrp.Velocity = Vector3.new(0, 0, 0)
+
+								task.wait(0.3)
+
+								
+
+								-- 2. ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Æ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÃ‚Â¹ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂµÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°
+
+									local timeout = 0
+
+									while boxTool and boxTool.Parent == character and timeout < 30 do
+
+										-- ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â E ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¾ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂµÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚â€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â²ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂºÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢Å¡Ãƒâ€šÃ‚Â²ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¾ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¹ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂµÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Minutes)",
+
+	Step = 1,
+
+	Min = 1, Max = 30, Default = getgenv().AutoCarryDelay or 5,
+
+	Callback = function(value)
+
+		getgenv().AutoCarryDelay = value
+
+	end,
+
+})
+
+local Players = game:GetService("Players")
+
+local VirtualUser = game:GetService("VirtualUser")
+
+local antiAfkConnection
+
+getgenv().AntiAfkState = false
+
+local AntiAfkToggle = MainTab:Toggle({ Flag = "AntiAFK",
+
+	Name = "Anti AFK",
+
+	Callback = function(state)
+
+		getgenv().AntiAfkState = state
+
+		if state then
+
+			antiAfkConnection = Players.LocalPlayer.Idled:Connect(function()
+
+				VirtualUser:CaptureController()
+
+				VirtualUser:ClickButton2(Vector2.new())
+
+			end)
+
+		else
+
+			if antiAfkConnection then
+
+				antiAfkConnection:Disconnect()
+
+				antiAfkConnection = nil
+
+			end
+
+		end
+
+	end,
+
+})
+
+local function isBoostActive(boostName)
+
+	local PlayerGui = game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui")
+
+	if not PlayerGui then
+
+		return true
+
+	end
+
+	local InfoGui = PlayerGui:FindFirstChild("InfoGui")
+
+	if not InfoGui then
+
+		return true
+
+	end
+
+	local Boost = InfoGui:FindFirstChild("Boost")
+
+	if not Boost then
+
+		return true
+
+	end
+
+	local BoostFrame = Boost:FindFirstChild(boostName)
+
+	if not BoostFrame then
+
+		return false
+
+	end
+
+	if not BoostFrame.Visible then
+
+		return false
+
+	end
+
+	for _, v in ipairs(BoostFrame:GetDescendants()) do
+
+		if v:IsA("TextLabel") then
+
+			if v.Text == "00:00:00" or v.Text == "00:00" then
+
+				return false
+
+			end
+
+		end
+
+	end
+
+	return true
+
+end
+
+local function getPotionAmount(potionId)
+
+	local PlayerGui = game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui")
+
+	if not PlayerGui then
+
+		return 0
+
+	end
+
+	local GuiMid = PlayerGui:FindFirstChild("GuiMid")
+
+	if not GuiMid then
+
+		return 0
+
+	end
+
+	local Items = GuiMid:FindFirstChild("Items")
+
+	if not Items then
+
+		return 0
+
+	end
+
+	local ItemsFrame = Items:FindFirstChild("ItemsFrame")
+
+	if not ItemsFrame then
+
+		return 0
+
+	end
+
+	local ScrollingFrameItems = ItemsFrame:FindFirstChild("ScrollingFrameItems")
+
+	if not ScrollingFrameItems then
+
+		return 0
+
+	end
+
+	local ObjectFrame = ScrollingFrameItems:FindFirstChild("ObjectFrame_" .. potionId)
+
+	if not ObjectFrame then
+
+		return 0
+
+	end
+
+	if not ObjectFrame.Visible then
+
+		return 0
+
+	end
+
+	local ObjectButton = ObjectFrame:FindFirstChild("ObjectButton")
+
+	if not ObjectButton then
+
+		return 0
+
+	end
+
+	local Quantity = ObjectButton:FindFirstChild("Quantity")
+
+	if not Quantity or not Quantity:IsA("TextLabel") then
+
+		return 0
+
+	end
+
+	local amountStr = Quantity.Text:gsub("x", "")
+
+	return tonumber(amountStr) or 0
+
+end
+
+
+
+local PotionTab = MainPage:Section({Name = "Potions", Side = 2})
+
+local function setupPotionToggle(title, boostName, itemIdPrefix)
+
+	local genvName = "AutoUse" .. title
+
+	getgenv()[genvName] = false
+
+	PotionTab:Toggle({ Flag = "AutoUse" .. title,
+
+		Name = "Auto Use " .. title .. " Potion",
+
+		Default = getgenv()[genvName],
+
+		Callback = function(state)
+
+			getgenv()[genvName] = state
+
+			if state then
+
+				task.spawn(function()
+
+					local Remotes = game:GetService("ReplicatedStorage"):WaitForChild("Remotes", 5)
+
+					local ItemsRE = Remotes and Remotes:WaitForChild("ItemsRE", 5)
+
+					if not ItemsRE then
+
+						return
+
+					end
+
+					while getgenv()[genvName] do
+
+						if not isBoostActive(boostName) then
+
+							local amt1 = getPotionAmount(itemIdPrefix .. "1")
+
+							local amt2 = getPotionAmount(itemIdPrefix .. "2")
+
+							local amt3 = getPotionAmount(itemIdPrefix .. "3")
+
+							if Library and Library.Notification then
+
+								Library:Notification({
+
+									Title = title .. " Inventory Check",
+
+									Description = string.format("Remaining - III: %d | II: %d | I: %d", amt3, amt2, amt1),
+
+									Duration = 3, Icon = "85279746515974"})
+
+							end
+
+							if amt3 > 0 then
+
+								ItemsRE:FireServer(
+
+									"UseItem",
+
+									{ ItemId = itemIdPrefix .. "3", Amount = math.min(5, amt3) }
+
+								)
+
+							elseif amt2 > 0 then
+
+								ItemsRE:FireServer(
+
+									"UseItem",
+
+									{ ItemId = itemIdPrefix .. "2", Amount = math.min(5, amt2) }
+
+								)
+
+							elseif amt1 > 0 then
+
+								ItemsRE:FireServer(
+
+									"UseItem",
+
+									{ ItemId = itemIdPrefix .. "1", Amount = math.min(5, amt1) }
+
+								)
+
+							end
+
+						end
+
+						task.wait(2)
+
+					end
+
+				end)
+
+			end
+
+		end,
+
+	})
+
+end
+
+setupPotionToggle("Luck", "PotionLuck", "LuckPotion")
+
+setupPotionToggle("Cash", "PotionCash", "CashPotion")
+
+setupPotionToggle("Mutation", "PotionMutation", "MutationPotion")
+
+setupPotionToggle("Production", "PotionProduction", "ProductionPotion")
+
+local RaidTab = MainPage:Section({Name = "Raid & Tower", Side = 1})
+
+local TradeTab = MainPage:Section({Name = "Trade", Side = 2})
+
+getgenv().AutoTower = false
+
+local AutoTowerToggle = RaidTab:Toggle({ Flag = "AutoInfinityTower",
+
+	Name = "Auto Infinity Tower",
+
+	Default = getgenv().AutoTower,
+
+	Callback = function(state)
+
+		getgenv().AutoTower = state
+
+		if not state then
+
+			local cam = workspace.CurrentCamera
+
+			local character = game:GetService("Players").LocalPlayer.Character
+
+			if cam and getgenv().TowerSavedCamCF then
+
+				cam.CameraType = Enum.CameraType.Custom
+
+				if character and character:FindFirstChild("Humanoid") then
+
+					cam.CameraSubject = character.Humanoid
+
+				end
+
+				getgenv().TowerSavedCamCF = nil
+
+			end
+
+			if getgenv().TowerOriginalCFrame and character then
+
+				character:PivotTo(getgenv().TowerOriginalCFrame)
+
+				getgenv().TowerOriginalCFrame = nil
+
+			end
+
+		end
+
+		if state then
+
+			task.spawn(function()
+
+				while getgenv().AutoTower do
+
+					local playerGui = game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui")
+
+					if playerGui then
+
+						local equipBtn, battleBtn, nextBtn, playBtn, openBtn, autoReplayBtn, hideBattleBtn, showBattleBtn
+
+						local function isGuiVisible(gui)
+
+							if not gui then
+
+								return false
+
+							end
+
+							if gui:IsA("GuiObject") and not gui.Visible then
+
+								return false
+
+							end
+
+							local current = gui.Parent
+
+							while current and current:IsA("GuiObject") do
+
+								if not current.Visible then
+
+									return false
+
+								end
+
+								current = current.Parent
+
+							end
+
+							if current and current:IsA("ScreenGui") then
+
+								return current.Enabled
+
+							end
+
+							return true
+
+						end
+
+						for _, v in ipairs(playerGui:GetDescendants()) do
+
+							if (v:IsA("TextButton") or v:IsA("TextLabel")) and v.Text then
+
+								local text = string.upper(string.match(v.Text, "^%s*(.-)%s*$") or "")
+
+								if text == "EQUIP BEST" then
+
+									local btn = v:IsA("TextButton") and v
+
+										or v:FindFirstAncestorWhichIsA("TextButton")
+
+										or v:FindFirstAncestorWhichIsA("ImageButton")
+
+									if btn and isGuiVisible(btn) then
+
+										equipBtn = btn
+
+									end
+
+								elseif text == "BATTLE" then
+
+									local btn = v:IsA("TextButton") and v
+
+										or v:FindFirstAncestorWhichIsA("TextButton")
+
+										or v:FindFirstAncestorWhichIsA("ImageButton")
+
+									if btn and isGuiVisible(btn) then
+
+										battleBtn = btn
+
+									end
+
+								elseif text == "NEXT" or text == "NEXT FLOOR" then
+
+									local btn = v:IsA("TextButton") and v
+
+										or v:FindFirstAncestorWhichIsA("TextButton")
+
+										or v:FindFirstAncestorWhichIsA("ImageButton")
+
+									if btn and isGuiVisible(btn) then
+
+										nextBtn = btn
+
+									end
+
+								elseif text == "PLAY" then
+
+									local btn = v:IsA("TextButton") and v
+
+										or v:FindFirstAncestorWhichIsA("TextButton")
+
+										or v:FindFirstAncestorWhichIsA("ImageButton")
+
+									if btn and isGuiVisible(btn) then
+
+										playBtn = btn
+
+									end
+
+								elseif text == "AUTO REPLAY" then
+
+									local btn = v:IsA("TextButton") and v
+
+										or v:FindFirstAncestorWhichIsA("TextButton")
+
+										or v:FindFirstAncestorWhichIsA("ImageButton")
+
+									if btn and isGuiVisible(btn) then
+
+										autoReplayBtn = btn
+
+									end
+
+								elseif text == "HIDE BATTLE" then
+
+									local btn = v:IsA("TextButton") and v
+
+										or v:FindFirstAncestorWhichIsA("TextButton")
+
+										or v:FindFirstAncestorWhichIsA("ImageButton")
+
+									if btn and isGuiVisible(btn) then
+
+										hideBattleBtn = btn
+
+									end
+
+								elseif text == "SHOW BATTLE" then
+
+									local btn = v:IsA("TextButton") and v
+
+										or v:FindFirstAncestorWhichIsA("TextButton")
+
+										or v:FindFirstAncestorWhichIsA("ImageButton")
+
+									if btn and isGuiVisible(btn) then
+
+										showBattleBtn = btn
+
+									end
+
+								elseif string.find(text, "OPEN INFINITY TOWER") then
+
+									local btn = v:IsA("TextButton") and v
+
+										or v:FindFirstAncestorWhichIsA("TextButton")
+
+										or v:FindFirstAncestorWhichIsA("ImageButton")
+
+									if btn then
+
+										openBtn = btn
+
+									end
+
+								end
+
+							end
+
+						end
+
+						local openPrompt
+
+						for _, p in ipairs(workspace:GetDescendants()) do
+
+							if p:IsA("ProximityPrompt") then
+
+								local pText = string.upper(p.ActionText .. " " .. p.ObjectText)
+
+								if
+
+									string.find(pText, "OPEN INFINITY TOWER") or string.find(pText, "INFINITY TOWER")
+
+								then
+
+									openPrompt = p
+
+									break
+
+								end
+
+							end
+
+						end
+
+						local function fireButton(btn)
+
+							if not btn then
+
+								return
+
+							end
+
+							pcall(function()
+
+								local fired = false
+
+								if getconnections then
+
+									for _, conn in pairs(getconnections(btn.Activated)) do
+
+										pcall(function()
+
+											conn:Fire()
+
+										end)
+
+										fired = true
+
+									end
+
+									for _, conn in pairs(getconnections(btn.MouseButton1Click)) do
+
+										pcall(function()
+
+											conn:Fire()
+
+										end)
+
+										fired = true
+
+									end
+
+									for _, conn in pairs(getconnections(btn.MouseButton1Down)) do
+
+										pcall(function()
+
+											conn:Fire()
+
+										end)
+
+										fired = true
+
+									end
+
+								end
+
+								if not fired then
+
+									local vim = game:GetService("VirtualInputManager")
+
+									local absPos = btn.AbsolutePosition
+
+									local absSize = btn.AbsoluteSize
+
+									local center = absPos + (absSize / 2)
+
+									vim:SendMouseButtonEvent(center.X, center.Y + 36, 0, true, game, 1)
+
+									task.wait(0.1)
+
+									vim:SendMouseButtonEvent(center.X, center.Y + 36, 0, false, game, 1)
+
+								end
+
+							end)
+
+						end
+
+						local inBattle = equipBtn or battleBtn or autoReplayBtn or showBattleBtn
+
+						if openPrompt and not inBattle then
+
+							pcall(function()
+
+								local hrp = game:GetService("Players").LocalPlayer.Character
+
+									and game:GetService("Players").LocalPlayer.Character
+
+										:FindFirstChild("HumanoidRootPart")
+
+								if hrp then
+
+									local targetPos
+
+									if openPrompt.Parent:IsA("BasePart") then
+
+										targetPos = openPrompt.Parent.Position
+
+									elseif openPrompt.Parent:IsA("Attachment") then
+
+										targetPos = openPrompt.Parent.WorldPosition
+
+									elseif openPrompt.Parent:IsA("Model") and openPrompt.Parent.PrimaryPart then
+
+										targetPos = openPrompt.Parent.PrimaryPart.Position
+
+									end
+
+									if targetPos then
+
+										local dist = (hrp.Position - targetPos).Magnitude
+
+										if dist > 15 then
+
+											local character = game:GetService("Players").LocalPlayer.Character
+
+											if not getgenv().TowerOriginalCFrame then
+
+												getgenv().TowerOriginalCFrame = character:GetPivot()
+
+											end
+
+											local cam = workspace.CurrentCamera
+
+											if cam then
+
+												getgenv().TowerSavedCamCF = cam.CFrame
+
+												cam.CameraType = Enum.CameraType.Scriptable
+
+											end
+
+											character:PivotTo(CFrame.new(targetPos) + Vector3.new(0, 3, 0))
+
+											task.wait(0.1)
+
+										end
+
+									end
+
+								end
+
+								openPrompt.RequiresLineOfSight = false
+
+								openPrompt.MaxActivationDistance = 99999
+
+								fireproximityprompt(openPrompt)
+
+							end)
+
+							task.wait(0.1)
+
+						end
+
+						if openBtn and not (equipBtn or battleBtn) then
+
+							fireButton(openBtn)
+
+							task.wait(0.1)
+
+						end
+
+						if equipBtn then
+
+							fireButton(equipBtn)
+
+							task.wait(0.1)
+
+						end
+
+						if battleBtn then
+
+							fireButton(battleBtn)
+
+							task.wait(0.2)
+
+							local character = game:GetService("Players").LocalPlayer.Character
+
+							if getgenv().TowerOriginalCFrame and character then
+
+								character:PivotTo(getgenv().TowerOriginalCFrame)
+
+								getgenv().TowerOriginalCFrame = nil
+
+								local cam = workspace.CurrentCamera
+
+								local char = game:GetService("Players").LocalPlayer.Character
+
+								if cam and getgenv().TowerSavedCamCF then
+
+									cam.CameraType = Enum.CameraType.Custom
+
+									if char and char:FindFirstChild("Humanoid") then
+
+										cam.CameraSubject = char.Humanoid
+
+									end
+
+									getgenv().TowerSavedCamCF = nil
+
+								end
+
+							end
+
+						end
+
+						if autoReplayBtn then
+
+							local color = autoReplayBtn.BackgroundColor3
+
+							if
+
+								autoReplayBtn.BackgroundTransparency > 0.5
+
+								and autoReplayBtn.Parent
+
+								and autoReplayBtn.Parent:IsA("GuiObject")
+
+							then
+
+								color = autoReplayBtn.Parent.BackgroundColor3
+
+							end
+
+							if
+
+								autoReplayBtn:IsA("ImageButton")
+
+								and autoReplayBtn.ImageColor3 ~= Color3.new(1, 1, 1)
+
+							then
+
+								color = autoReplayBtn.ImageColor3
+
+							end
+
+							local isGreen = (color.G > color.R + 0.1)
+
+							if isGreen then
+
+								getgenv().AutoReplayToggled = true
+
+							elseif not getgenv().AutoReplayToggled then
+
+								fireButton(autoReplayBtn)
+
+								getgenv().AutoReplayToggled = true
+
+								task.wait(0.2)
+
+							end
+
+						end
+
+						if not (autoReplayBtn or showBattleBtn or hideBattleBtn) then
+
+							getgenv().AutoReplayToggled = false
+
+						end
+
+						if autoReplayBtn or showBattleBtn then
+
+							local character = game:GetService("Players").LocalPlayer.Character
+
+							if getgenv().TowerOriginalCFrame and character then
+
+								character:PivotTo(getgenv().TowerOriginalCFrame)
+
+								getgenv().TowerOriginalCFrame = nil
+
+								local cam = workspace.CurrentCamera
+
+								local char = game:GetService("Players").LocalPlayer.Character
+
+								if cam and getgenv().TowerSavedCamCF then
+
+									cam.CameraType = Enum.CameraType.Custom
+
+									if char and char:FindFirstChild("Humanoid") then
+
+										cam.CameraSubject = char.Humanoid
+
+									end
+
+									getgenv().TowerSavedCamCF = nil
+
+								end
+
+							end
+
+						end
+
+						if hideBattleBtn then
+
+							fireButton(hideBattleBtn)
+
+							task.wait(0.2)
+
+						end
+
+						if nextBtn then
+
+							fireButton(nextBtn)
+
+							task.wait(0.2)
+
+						end
+
+						if playBtn then
+
+							fireButton(playBtn)
+
+							task.wait(0.2)
+
+						end
+
+					end
+
+					task.wait(0.2)
+
+				end
+
+			end)
+
+		end
+
+	end,
+
+})
+
+getgenv().BossRaidDifficulty = "NIGHTMARE"
+
+local BossRaidDiffDropdown = RaidTab:Dropdown({ Flag = "BossRaidDifficulty",
+
+	Name = "Boss Raid Difficulty",
+
+	Default = "NIGHTMARE",
+
+	Items = { "EASY", "MEDIUM", "HARD", "NIGHTMARE" },
+
+	Callback = function(Value)
+
+		getgenv().BossRaidDifficulty = Value
+
+	end,
+
+})
+
+getgenv().AutoBossRaid = false
+
+local AutoBossRaidToggle = RaidTab:Toggle({ Flag = "AutoBossRaid",
+
+	Name = "Auto Boss Raid",
+
+	Default = getgenv().AutoBossRaid,
+
+	Callback = function(state)
+
+		getgenv().AutoBossRaid = state
+
+		if state then
+
+			getgenv().AutoTower = false
+
+			task.spawn(function()
+
+				while getgenv().AutoBossRaid do
+
+					local playerGui = game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui")
+
+					if playerGui then
+
+						local equipBtn, battleBtn, diffBtn, autoReplayBtn, showBattleBtn, hideBattleBtn, nextBtn, playBtn
+
+						local function isGuiVisible(gui)
+
+							if not gui then
+
+								return false
+
+							end
+
+							if gui:IsA("GuiObject") and not gui.Visible then
+
+								return false
+
+							end
+
+							local current = gui.Parent
+
+							while current and current:IsA("GuiObject") do
+
+								if not current.Visible then
+
+									return false
+
+								end
+
+								current = current.Parent
+
+							end
+
+							if current and current:IsA("ScreenGui") then
+
+								return current.Enabled
+
+							end
+
+							return true
+
+						end
+
+						local function fireButton(btn)
+
+							pcall(function()
+
+								local fired = false
+
+								if btn.Parent:IsA("ProximityPrompt") then
+
+									return
+
+								end
+
+								for _, c in ipairs(getconnections(btn.MouseButton1Click)) do
+
+									c:Fire()
+
+									fired = true
+
+								end
+
+								if not fired then
+
+									for _, c in ipairs(getconnections(btn.MouseButton1Down)) do
+
+										c:Fire()
+
+										fired = true
+
+									end
+
+									for _, c in ipairs(getconnections(btn.MouseButton1Up)) do
+
+										c:Fire()
+
+										fired = true
+
+									end
+
+									for _, c in ipairs(getconnections(btn.Activated)) do
+
+										c:Fire()
+
+										fired = true
+
+									end
+
+								end
+
+								if not fired then
+
+									local vim = game:GetService("VirtualInputManager")
+
+									local absPos = btn.AbsolutePosition
+
+									local absSize = btn.AbsoluteSize
+
+									local center = absPos + (absSize / 2)
+
+									vim:SendMouseButtonEvent(center.X, center.Y + 36, 0, true, game, 1)
+
+									task.wait(0.1)
+
+									vim:SendMouseButtonEvent(center.X, center.Y + 36, 0, false, game, 1)
+
+								end
+
+							end)
+
+						end
+
+						local alreadyFought = false
+
+						for _, v in ipairs(playerGui:GetDescendants()) do
+
+							if (v:IsA("TextButton") or v:IsA("TextLabel")) and v.Text then
+
+								local text = string.upper(string.match(v.Text, "^%s*(.-)%s*$") or "")
+
+								if string.find(text, "ALREADY FOUGHT THE BOSS") and isGuiVisible(v) then
+
+									alreadyFought = true
+
+								end
+
+								if text == "EQUIP BEST" then
+
+									local btn = v:IsA("TextButton") and v
+
+										or v:FindFirstAncestorWhichIsA("TextButton")
+
+										or v:FindFirstAncestorWhichIsA("ImageButton")
+
+									if btn and isGuiVisible(btn) then
+
+										equipBtn = btn
+
+									end
+
+								elseif text == "BATTLE" then
+
+									local btn = v:IsA("TextButton") and v
+
+										or v:FindFirstAncestorWhichIsA("TextButton")
+
+										or v:FindFirstAncestorWhichIsA("ImageButton")
+
+									if btn and isGuiVisible(btn) then
+
+										battleBtn = btn
+
+									end
+
+								elseif text == getgenv().BossRaidDifficulty then
+
+									local btn = v:IsA("TextButton") and v
+
+										or v:FindFirstAncestorWhichIsA("TextButton")
+
+										or v:FindFirstAncestorWhichIsA("ImageButton")
+
+									if btn and isGuiVisible(btn) then
+
+										diffBtn = btn
+
+									end
+
+								elseif text == "AUTO REPLAY" then
+
+									local btn = v:IsA("TextButton") and v
+
+										or v:FindFirstAncestorWhichIsA("TextButton")
+
+										or v:FindFirstAncestorWhichIsA("ImageButton")
+
+									if btn and isGuiVisible(btn) then
+
+										autoReplayBtn = btn
+
+									end
+
+								elseif text == "SHOW BATTLE" then
+
+									local btn = v:IsA("TextButton") and v
+
+										or v:FindFirstAncestorWhichIsA("TextButton")
+
+										or v:FindFirstAncestorWhichIsA("ImageButton")
+
+									if btn and isGuiVisible(btn) then
+
+										showBattleBtn = btn
+
+									end
+
+								elseif text == "HIDE BATTLE" then
+
+									local btn = v:IsA("TextButton") and v
+
+										or v:FindFirstAncestorWhichIsA("TextButton")
+
+										or v:FindFirstAncestorWhichIsA("ImageButton")
+
+									if btn and isGuiVisible(btn) then
+
+										hideBattleBtn = btn
+
+									end
+
+								elseif text == "NEXT" or text == "NEXT FLOOR" then
+
+									local btn = v:IsA("TextButton") and v
+
+										or v:FindFirstAncestorWhichIsA("TextButton")
+
+										or v:FindFirstAncestorWhichIsA("ImageButton")
+
+									if btn and isGuiVisible(btn) then
+
+										nextBtn = btn
+
+									end
+
+								elseif text == "PLAY" then
+
+									local btn = v:IsA("TextButton") and v
+
+										or v:FindFirstAncestorWhichIsA("TextButton")
+
+										or v:FindFirstAncestorWhichIsA("ImageButton")
+
+									if btn and isGuiVisible(btn) then
+
+										playBtn = btn
+
+									end
+
+								end
+
+							end
+
+						end
+
+						if alreadyFought then
+
+							getgenv().AutoBossRaid = false
+
+							if AutoBossRaidToggle and AutoBossRaidToggle.Set then
+
+								pcall(function()
+
+									AutoBossRaidToggle:Set(false)
+
+								end)
+
+							end
+
+							if Library and Library.Notification then
+
+								Library:Notification({
+
+									Title = "Boss Raid",
+
+									Description = "You already fought the boss this hour! Auto Boss Raid stopped.",
+
+									Duration = 5, Icon = "85279746515974"})
+
+							end
+
+							local character = game:GetService("Players").LocalPlayer.Character
+
+							if getgenv().BossOriginalCFrame and character then
+
+								character:PivotTo(getgenv().BossOriginalCFrame)
+
+								getgenv().BossOriginalCFrame = nil
+
+							end
+
+							continue
+
+						end
+
+						local inBattle = equipBtn or battleBtn or autoReplayBtn or showBattleBtn
+
+						if not inBattle then
+
+							local bossPrompt
+
+							local portalPrompt
+
+							local cooldownText = nil
+
+							for _, p in ipairs(workspace:GetDescendants()) do
+
+								if p:IsA("TextLabel") or p:IsA("TextButton") then
+
+									local match = string.match(p.Text, "[Oo]pen in %d+:%d+:%d+") or string.match(p.Text, "[Oo]pen in %d+:%d+")
+
+									if match then
+
+										cooldownText = match
+
+									end
+
+								end
+
+								if p:IsA("ProximityPrompt") then
+
+									local pText = string.upper(
+
+										p.ActionText .. " " .. p.ObjectText .. " " .. (p.Parent and p.Parent.Name or "")
+
+									)
+
+									if string.find(pText, "BOSS RAID") and string.find(pText, "TELEPORT") then
+
+										portalPrompt = p
+
+									elseif
+
+										not string.find(pText, "SHOP")
+
+										and not string.find(pText, "RETURN")
+
+										and not string.find(pText, "BACK")
+
+										and not string.find(pText, "TELEPORT")
+
+									then
+
+										if
+
+											string.find(pText, "TITAN")
+
+											or string.find(pText, "BOSS")
+
+											or string.find(pText, "RAID")
+
+											or string.find(pText, "FIGHT")
+
+										then
+
+											bossPrompt = p
+
+										end
+
+									end
+
+								end
+
+							end
+
+							local targetPrompt = bossPrompt or portalPrompt
+
+							if cooldownText then
+
+								if not getgenv().LastBossCooldownNotify or (tick() - getgenv().LastBossCooldownNotify > 60) then
+
+									if Library and Library.Notification then
+
+										Library:Notification({ Title = "Auto Boss Raid", Description = "Waiting: " .. cooldownText, Duration = 5, Icon = "85279746515974"})
+
+									end
+
+									getgenv().LastBossCooldownNotify = tick()
+
+								end
+
+								local character = game:GetService("Players").LocalPlayer.Character
+
+								if getgenv().BossOriginalCFrame and character then
+
+									character:PivotTo(getgenv().BossOriginalCFrame)
+
+									getgenv().BossOriginalCFrame = nil
+
+								end
+
+								task.wait(1)
+
+							elseif targetPrompt then
+
+								pcall(function()
+
+									local hrp = game:GetService("Players").LocalPlayer.Character
+
+										and game:GetService("Players").LocalPlayer.Character
+
+											:FindFirstChild("HumanoidRootPart")
+
+									if hrp then
+
+										local targetPos
+
+										if targetPrompt.Parent:IsA("BasePart") then
+
+											targetPos = targetPrompt.Parent.Position
+
+										elseif targetPrompt.Parent:IsA("Attachment") then
+
+											targetPos = targetPrompt.Parent.WorldPosition
+
+										elseif targetPrompt.Parent:IsA("Model") and targetPrompt.Parent.PrimaryPart then
+
+											targetPos = targetPrompt.Parent.PrimaryPart.Position
+
+										end
+
+										if targetPos then
+
+											local character = game:GetService("Players").LocalPlayer.Character
+
+											if (hrp.Position - targetPos).Magnitude > 15 then
+
+												if not getgenv().BossOriginalCFrame then
+
+													getgenv().BossOriginalCFrame = character:GetPivot()
+
+												end
+
+												character:PivotTo(CFrame.new(targetPos) + Vector3.new(0, 3, 0))
+
+												task.wait(0.1)
+
+											end
+
+										end
+
+									end
+
+									targetPrompt.RequiresLineOfSight = false
+
+									targetPrompt.MaxActivationDistance = 99999
+
+									fireproximityprompt(targetPrompt)
+
+								end)
+
+								task.wait(0.5)
+
+								pcall(function()
+
+									local hrp = game:GetService("Players").LocalPlayer.Character and game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+
+									if hrp and targetPrompt and targetPrompt.Parent then
+
+										local targetPos
+
+										if targetPrompt.Parent:IsA("BasePart") then targetPos = targetPrompt.Parent.Position
+
+										elseif targetPrompt.Parent:IsA("Attachment") then targetPos = targetPrompt.Parent.WorldPosition
+
+										elseif targetPrompt.Parent:IsA("Model") and targetPrompt.Parent.PrimaryPart then targetPos = targetPrompt.Parent.PrimaryPart.Position end
+
+										
+
+										if targetPos and (hrp.Position - targetPos).Magnitude < 30 then
+
+											task.wait(10)
+
+										end
+
+									end
+
+								end)
+
+							end
+
+						end
+
+						if diffBtn and not (autoReplayBtn or showBattleBtn) then
+
+							fireButton(diffBtn)
+
+							task.wait(0.1)
+
+						end
+
+						if equipBtn then
+
+							fireButton(equipBtn)
+
+							task.wait(0.1)
+
+						end
+
+						if battleBtn then
+
+							fireButton(battleBtn)
+
+							task.wait(0.2)
+
+							local character = game:GetService("Players").LocalPlayer.Character
+
+							if getgenv().BossOriginalCFrame and character then
+
+								character:PivotTo(getgenv().BossOriginalCFrame)
+
+								getgenv().BossOriginalCFrame = nil
+
+							end
+
+						end
+
+						if autoReplayBtn then
+
+							local color = autoReplayBtn.BackgroundColor3
+
+							if
+
+								autoReplayBtn.BackgroundTransparency > 0.5
+
+								and autoReplayBtn.Parent
+
+								and autoReplayBtn.Parent:IsA("GuiObject")
+
+							then
+
+								color = autoReplayBtn.Parent.BackgroundColor3
+
+							end
+
+							if
+
+								autoReplayBtn:IsA("ImageButton")
+
+								and autoReplayBtn.ImageColor3 ~= Color3.new(1, 1, 1)
+
+							then
+
+								color = autoReplayBtn.ImageColor3
+
+							end
+
+							local isGreen = (color.G > color.R + 0.1)
+
+							if isGreen then
+
+								getgenv().AutoReplayToggledBoss = true
+
+							elseif not getgenv().AutoReplayToggledBoss then
+
+								fireButton(autoReplayBtn)
+
+								getgenv().AutoReplayToggledBoss = true
+
+								task.wait(0.2)
+
+							end
+
+						end
+
+						if not (autoReplayBtn or showBattleBtn or hideBattleBtn) then
+
+							getgenv().AutoReplayToggledBoss = false
+
+						end
+
+						if autoReplayBtn or showBattleBtn then
+
+							local character = game:GetService("Players").LocalPlayer.Character
+
+							if getgenv().BossOriginalCFrame and character then
+
+								character:PivotTo(getgenv().BossOriginalCFrame)
+
+								getgenv().BossOriginalCFrame = nil
+
+							end
+
+						end
+
+						if hideBattleBtn then
+
+							fireButton(hideBattleBtn)
+
+							task.wait(0.2)
+
+						end
+
+						if nextBtn then
+
+							fireButton(nextBtn)
+
+							task.wait(0.2)
+
+						end
+
+						if playBtn then
+
+							fireButton(playBtn)
+
+							task.wait(0.2)
+
+						end
+
+					end
+
+					task.wait(0.2)
+
+				end
+
+			end)
+
+		else
+
+			local character = game:GetService("Players").LocalPlayer.Character
+
+			if getgenv().BossOriginalCFrame and character then
+
+				character:PivotTo(getgenv().BossOriginalCFrame)
+
+				getgenv().BossOriginalCFrame = nil
+
+			end
+
+		end
+
+	end,
+
+})
+
+RaidTab:Button({
+
+	Name = "Check Boss Raid Cooldown",
+
+	Callback = function()
+
+		local foundTimer = false
+
+		pcall(function()
+
+			for _, v in ipairs(workspace:GetDescendants()) do
+
+				if v:IsA("TextLabel") or v:IsA("TextButton") then
+
+					if string.find(v.Text, "%d+:%d+:%d+") or string.find(v.Text, "%d+:%d+") then
+
+						local lowerText = string.lower(v.Text)
+
+						if string.find(lowerText, "boss") or string.find(lowerText, "raid") then
+
+							if Library and Library.Notification then
+
+								Library:Notification({ Title = "Boss Status", Description = "Timer found: " .. v.Text, Duration = 5, Icon = "85279746515974"})
+
+							end
+
+							foundTimer = true
+
+							break
+
+						elseif v.Parent and (string.find(string.lower(v.Parent.Name), "boss") or string.find(string.lower(v.Parent.Name), "raid") or string.find(string.lower(v.Parent.Name), "timer")) then
+
+							if Library and Library.Notification then
+
+								Library:Notification({ Title = "Boss Status", Description = "Timer found: " .. v.Text, Duration = 5, Icon = "85279746515974"})
+
+							end
+
+							foundTimer = true
+
+							break
+
+						end
+
+					end
+
+				end
+
+			end
+
+		end)
+
+		if not foundTimer then
+
+			local currentMin = tonumber(os.date("%M"))
+
+			local minToNextHour = 60 - currentMin
+
+			if Library and Library.Notification then
+
+				Library:Notification({ Title = "Boss Status", Description = "Estimated Cooldown: " .. minToNextHour .. " mins (Check portal for exact)", Duration = 5, Icon = "85279746515974"})
+
+			end
+
+		end
+
+	end,
+
+})
+
+local function GetPlayerNames()
+
+	local names = {}
+
+	for _, p in ipairs(game:GetService("Players"):GetPlayers()) do
+
+		if p ~= game:GetService("Players").LocalPlayer then
+
+			table.insert(names, p.Name)
+
+		end
+
+	end
+
+	if #names == 0 then
+
+		table.insert(names, "No other players")
+
+	end
+
+	return names
+
+end
+
+getgenv().SelectedTradePlayer = ""
+
+local TradePlayerDropdown = TradeTab:Dropdown({ Flag = "SelectPlayertoTrade",
+
+	Name = "Select Player to Trade",
+
+	Default = "No other players",
+
+	Items = GetPlayerNames(),
+
+	Callback = function(Value)
+
+		getgenv().SelectedTradePlayer = Value
+
+	end,
+
+})
+
+TradeTab:Button({
+
+	Name = "Refresh Player List",
+
+	Callback = function()
+
+		if TradePlayerDropdown and TradePlayerDropdown.Refresh then
+
+			pcall(function()
+
+				TradePlayerDropdown:Refresh(GetPlayerNames())
+
+			end)
+
+		end
+
+		if Library and Library.Notification then
+
+			Library:Notification({ Title = "Trade", Description = "Player list refreshed!", Duration = 3, Icon = "85279746515974"})
+
+		end
+
+	end,
+
+})
+
+TradeTab:Button({
+
+	Name = "Teleport to Player",
+
+	Callback = function()
+
+		local targetName = getgenv().SelectedTradePlayer
+
+		if targetName and targetName ~= "" and targetName ~= "No other players" then
+
+			local targetPlayer = game:GetService("Players"):FindFirstChild(targetName)
+
+			if
+
+				targetPlayer
+
+				and targetPlayer.Character
+
+				and targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+
+			then
+
+				local localChar = game:GetService("Players").LocalPlayer.Character
+
+				if localChar and localChar:FindFirstChild("HumanoidRootPart") then
+
+					localChar:PivotTo(targetPlayer.Character.HumanoidRootPart.CFrame)
+
+					if Library and Library.Notification then
+
+						Library:Notification({ Title = "Trade", Description = "Teleported to " .. targetName, Duration = 3, Icon = "85279746515974"})
+
+					end
+
+				end
+
+			else
+
+				if Library and Library.Notification then
+
+					Library:Notification({ Title = "Trade", Description = "Player not found or dead!", Duration = 3, Icon = "85279746515974"})
+
+				end
+
+			end
+
+		else
+
+			if Library and Library.Notification then
+
+				Library:Notification({ Title = "Trade", Description = "Please select a valid player first!", Duration = 3, Icon = "85279746515974"})
+
+			end
+
+		end
+
+	end,
+
+})
+
+
+
+local function GetInventoryCardsForTrade()
+
+	local player = game:GetService("Players").LocalPlayer
+
+	local inventory = {}
+
+	local function scanFolder(folder)
+
+		if not folder then return end
+
+		for _, item in ipairs(folder:GetChildren()) do
+
+			if item:IsA("Tool") then
+
+				local isCard = item:GetAttribute("CardName") ~= nil
+
+				local isPack = item:GetAttribute("TemplateName") ~= nil
+
+				if isCard or isPack then
+
+					local rarityAttr = item:GetAttribute("Rarity") or item:GetAttribute("CardGrade")
+
+					if not rarityAttr and item:FindFirstChild("Rarity") and item.Rarity:IsA("StringValue") then
+
+						rarityAttr = item.Rarity.Value
+
+					end
+
+					local cardName = item:GetAttribute("CardName") or item:GetAttribute("TemplateName") or item.Name
+
+					local mutation = item:GetAttribute("Mutation") or item:GetAttribute("CardMutation") or "Normal"
+
+					if not item:GetAttribute("Mutation") and not item:GetAttribute("CardMutation") and item:FindFirstChild("Mutation") and item.Mutation:IsA("StringValue") then
+
+						mutation = item.Mutation.Value
+
+					end
+
+
+
+					local prefix = ""
+
+					if rarityAttr and rarityAttr ~= "Unknown" then prefix = tostring(rarityAttr) end
+
+					if mutation and mutation ~= "Normal" then prefix = (prefix == "") and tostring(mutation) or (prefix .. " - " .. tostring(mutation)) end
+
+					local key = tostring(cardName)
+
+					if prefix ~= "" then key = "[" .. prefix .. "] " .. key end
+
+
+
+					if not inventory[key] then inventory[key] = 0 end
+
+					inventory[key] = inventory[key] + 1
+
+				end
+
+			end
+
+		end
+
+	end
+
+	pcall(function()
+
+		scanFolder(player:FindFirstChild("Backpack"))
+
+		if player.Character then scanFolder(player.Character) end
+
+	end)
+
+
+
+	local list = {}
+
+	for key, count in pairs(inventory) do
+
+		table.insert(list, tostring(count) .. "x | " .. key)
+
+	end
+
+	if #list == 0 then table.insert(list, "No cards found") end
+
+	return list
+
+end
+
+
+
+getgenv().SelectedTradeCards = {}
+
+local TradeCardsDropdown
+
+local SelectedCardsLabel = TradeTab:Label("Selected: None")
+
+TradeCardsDropdown = TradeTab:Dropdown({ Flag = "SelectCardstoTrade",
+
+	Name = "Select Cards to Trade",
+
+	Multi = true,
+
+	Default = {},
+
+	Items = GetInventoryCardsForTrade(),
+
+	OptionHolderSize = 250,
+
+	Callback = function(Value)
+
+		getgenv().SelectedTradeCards = {}
+
+		local selectedNames = {}
+
+		if type(Value) == "table" then
+
+			for k, v in pairs(Value) do
+
+				if type(k) == "number" then
+
+					getgenv().SelectedTradeCards[v] = true
+
+					table.insert(selectedNames, tostring(v))
+
+				else
+
+					getgenv().SelectedTradeCards[k] = v
+
+					if v then table.insert(selectedNames, tostring(k)) end
+
+				end
+
+			end
+
+		end
+
+		
+
+		if SelectedCardsLabel and SelectedCardsLabel.SetText then
+
+			local txt = table.concat(selectedNames, " | ")
+
+			if txt == "" then txt = "None" end
+
+			SelectedCardsLabel:SetText("Selected: " .. txt)
+
+		end
+
+	end,
+
+})
+
+
+
+TradeTab:Button({
+
+	Name = "Refresh Inventory Cards",
+
+	Callback = function()
+
+		if TradeCardsDropdown and TradeCardsDropdown.Refresh then
+
+			pcall(function()
+
+				TradeCardsDropdown:Refresh(GetInventoryCardsForTrade())
+
+			end)
+
+		end
+
+		if Library and Library.Notification then
+
+			Library:Notification({ Title = "Trade", Description = "Inventory cards refreshed!", Duration = 3, Icon = "85279746515974"})
+
+		end
+
+	end,
+
+})
+
+getgenv().AutoGiftCards = false
+
+TradeTab:Toggle({ Flag = "AutoTrade",
+
+	Name = "Auto Trade",
+
+	Default = getgenv().AutoGiftCards,
+
+	Callback = function(state)
+
+		getgenv().AutoGiftCards = state
+
+		if state then
+
+			task.spawn(function()
+
+				while getgenv().AutoGiftCards do
+
+					local targetName = getgenv().SelectedTradePlayer
+
+					if targetName and targetName ~= "" and targetName ~= "No other players" then
+
+						local targetPlayer = game:GetService("Players"):FindFirstChild(targetName)
+
+						if
+
+							targetPlayer
+
+							and targetPlayer.Character
+
+							and targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+
+						then
+
+							local localPlayer = game:GetService("Players").LocalPlayer
+
+							local localChar = localPlayer.Character
+
+							if localChar and localChar:FindFirstChild("Humanoid") then
+
+								local function getGiftableTool()
+
+									local function isSelected(t)
+
+										if not next(getgenv().SelectedTradeCards) then return true end -- if nothing selected, trade all
+
+										local rarityAttr = t:GetAttribute("Rarity") or t:GetAttribute("CardGrade")
+
+										if not rarityAttr and t:FindFirstChild("Rarity") and t.Rarity:IsA("StringValue") then
+
+											rarityAttr = t.Rarity.Value
+
+										end
+
+										local cardName = t:GetAttribute("CardName") or t:GetAttribute("TemplateName") or t.Name
+
+										local mutation = t:GetAttribute("Mutation") or t:GetAttribute("CardMutation") or "Normal"
+
+										if not t:GetAttribute("Mutation") and not t:GetAttribute("CardMutation") and t:FindFirstChild("Mutation") and t.Mutation:IsA("StringValue") then
+
+											mutation = t.Mutation.Value
+
+										end
+
+										
+
+										local prefix = ""
+
+										if rarityAttr and rarityAttr ~= "Unknown" then prefix = tostring(rarityAttr) end
+
+										if mutation and mutation ~= "Normal" then prefix = (prefix == "") and tostring(mutation) or (prefix .. " - " .. tostring(mutation)) end
+
+										local key = tostring(cardName)
+
+										if prefix ~= "" then key = "[" .. prefix .. "] " .. key end
+
+
+
+										for selectedText, _ in pairs(getgenv().SelectedTradeCards) do
+
+											local actualKey = selectedText:gsub("^%d+x %| ", "")
+
+											if actualKey == key then
+
+												return true
+
+											end
+
+										end
+
+										return false
+
+									end
+
+
+
+									local backpack = localPlayer:FindFirstChild("Backpack")
+
+									if backpack then
+
+										for _, t in ipairs(backpack:GetChildren()) do
+
+											if
+
+												t:IsA("Tool")
+
+												and (
+
+													t:GetAttribute("CardName") ~= nil
+
+													or t:GetAttribute("TemplateName") ~= nil
+
+												)
+
+											then
+
+												if isSelected(t) then return t end
+
+											end
+
+										end
+
+									end
+
+									for _, t in ipairs(localChar:GetChildren()) do
+
+										if
+
+											t:IsA("Tool")
+
+											and (
+
+												t:GetAttribute("CardName") ~= nil
+
+												or t:GetAttribute("TemplateName") ~= nil
+
+											)
+
+										then
+
+											if isSelected(t) then return t end
+
+										end
+
+									end
+
+									return nil
+
+								end
+
+								local tool = getGiftableTool()
+
+								if tool then
+
+									localChar.Humanoid:EquipTool(tool)
+
+									localChar:PivotTo(targetPlayer.Character.HumanoidRootPart.CFrame)
+
+									task.wait(0.1)
+
+									local promptFound = false
+
+									for _, desc in ipairs(targetPlayer.Character:GetDescendants()) do
+
+										if
+
+											desc:IsA("ProximityPrompt")
+
+											and desc:GetAttribute("IsGiftPrompt") == true
+
+										then
+
+											if fireproximityprompt then
+
+												fireproximityprompt(desc)
+
+												promptFound = true
+
+											end
+
+										end
+
+									end
+
+									if promptFound then
+
+										local waitTime = 0
+
+										while tool.Parent == localChar and waitTime < 15 and getgenv().AutoGiftCards do
+
+											task.wait(0.1)
+
+											waitTime = waitTime + 0.1
+
+										end
+
+									else
+
+										task.wait(0.5)
+
+									end
+
+								else
+
+									task.wait(1)
+
+								end
+
+							else
+
+								task.wait(1)
+
+							end
+
+						else
+
+							task.wait(1)
+
+						end
+
+					else
+
+						task.wait(1)
+
+					end
+
+				end
+
+			end)
+
+		end
+
+	end,
+
+})
+
+Window:Category("Settings")
+
+local SettingsPage = Library:CreateSettingsPage(Window, KeybindList)
+
+
+
+local SilentLoadEnabled = false
+
+pcall(function()
+
+    local path = Library.Folders.Configs .. "/silentload.txt"
+
+    if isfile and isfile(path) and readfile then
+
+        local ok, content = pcall(readfile, path)
+
+        if ok and content == "true" then
+
+            SilentLoadEnabled = true
+
+        end
+
+    end
+
+end)
+
+
+
+Window:Init()
+
+
+
+if SilentLoadEnabled and Window.SetOpen then
+
+    Window:SetOpen(false)
+
+end
+
+
+
+Library:Notification({
+
+            Title = "ZIIQ",
+
+            Description = "Script Has Been Successfully Loaded!",
+
+            Duration = 5,
+
+            Icon = "85279746515974"
+
+        })
+
