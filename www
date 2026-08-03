@@ -49,6 +49,10 @@ local fSetClipboard, fRequest, fStringChar, fToString, fStringSub, fOsTime, fMat
     local success, response = pcall(function() return fRequest(options) end)
     if success then return response else return nil end
 end
+local function safeRequest(options)
+    if type(fRequest) ~= "function" then return nil end
+    return fRequest(options)
+end
 local cachedLink, cachedTime = "", 0;
 
 
@@ -57,7 +61,7 @@ local cachedLink, cachedTime = "", 0;
 
 local host = "https://api.platoboost.com";
 
-local hostResponse = fRequest({
+local hostResponse = safeRequest({
 
     Url = host .. "/public/connectivity",
 
@@ -79,7 +83,7 @@ function cacheLink()
 
     if cachedTime + (10*60) < fOsTime() then
 
-        local response = fRequest({
+        local response = safeRequest({
 
             Url = host .. "/public/start",
 
@@ -243,7 +247,7 @@ local redeemKey = function(key)
 
 
 
-    local response = fRequest({
+    local response = safeRequest({
 
         Url = endpoint,
 
@@ -376,7 +380,7 @@ local verifyKey = function(key)
 
 
 
-    local response = fRequest({
+    local response = safeRequest({
 
         Url = endpoint,
 
@@ -480,7 +484,7 @@ local getFlag = function(name)
 
 
 
-    local response = fRequest({
+    local response = safeRequest({
 
         Url = endpoint,
 
@@ -582,7 +586,10 @@ local ZiiqKeyUI = Instance.new("ScreenGui")
 
 ZiiqKeyUI.Name = "ZiiqKeyUI"
 
-ZiiqKeyUI.Parent = CoreGui
+local successParent = pcall(function() ZiiqKeyUI.Parent = CoreGui end)
+if not successParent then
+    ZiiqKeyUI.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+end
 
 ZiiqKeyUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
